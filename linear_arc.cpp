@@ -6,7 +6,7 @@
 using namespace std;
 
 int main() {
-    ofstream meshFile("blockMeshDict"); /// change to "blockMeshDict"
+    ofstream meshFile("blockMeshDict");
     meshFile << std::fixed << setprecision(12);
     meshFile
             << "/*--------------------------------*- C++ -*----------------------------------*\\\n"
