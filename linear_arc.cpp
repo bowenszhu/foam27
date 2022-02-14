@@ -6,6 +6,29 @@
 using namespace std;
 
 int main() {
+    ofstream meshFile("blockMeshDict"); /// change to "blockMeshDict"
+    meshFile << std::fixed << setprecision(12);
+    meshFile
+            << "/*--------------------------------*- C++ -*----------------------------------*\\\n"
+               "  =========                 |\n"
+               "  \\\\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox\n"
+               "   \\\\    /   O peration     | Website:  https://openfoam.org\n"
+               "    \\\\  /    A nd           | Version:  9\n"
+               "     \\\\/     M anipulation  |\n"
+               "\\*---------------------------------------------------------------------------*/\n\n"
+               "FoamFile\n"
+               "{\n"
+               "    format      ascii;\n"
+               "    class       dictionary;\n"
+               "    object      blockMeshDict;\n"
+               "}\n"
+               "// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //\n"
+               "\n"
+               "convertToMeters 0.001;\n"
+               "\n"
+               "vertices\n"
+               "(\n";
+
     double OR = 21.59; /// outer radius
     double AR = 1.00; /// tan of the angle between 08 and 04
     double L_2 = 1.00; /// lambda / 2 (lambda is the distance between 0 and 8)
@@ -36,28 +59,6 @@ int main() {
     double X3_1 = X3_2;
     double Y3_1 = -Y3_2;
 
-    ofstream meshFile("blockMeshDict"); /// change to "blockMeshDict"
-    meshFile << std::fixed << setprecision(12);
-    meshFile
-            << "/*--------------------------------*- C++ -*----------------------------------*\\\n"
-               "  =========                 |\n"
-               "  \\\\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox\n"
-               "   \\\\    /   O peration     | Website:  https://openfoam.org\n"
-               "    \\\\  /    A nd           | Version:  9\n"
-               "     \\\\/     M anipulation  |\n"
-               "\\*---------------------------------------------------------------------------*/\n\n"
-               "FoamFile\n"
-               "{\n"
-               "    format      ascii;\n"
-               "    class       dictionary;\n"
-               "    object      blockMeshDict;\n"
-               "}\n"
-               "// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //\n"
-               "\n"
-               "convertToMeters 0.001;\n"
-               "\n"
-               "vertices\n"
-               "(\n";
     int v_i = 0; /// vertex index
     for (int i = 0; i < N; i++) {
         if (i % 2) {
