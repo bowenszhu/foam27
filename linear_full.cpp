@@ -16,8 +16,8 @@ void compute_indices(int indices[2][3], const int i, const int j, const int n) {
 
 int main() {
     ofstream meshFile("blockMeshDict");
-    meshFile << std::fixed << setprecision(12);
-    meshFile << "/*--------------------------------*- C++ -*----------------------------------*\\\n"
+    meshFile << std::fixed << setprecision(12)
+             << "/*--------------------------------*- C++ -*----------------------------------*\\\n"
                 "  =========                 |\n"
                 "  \\\\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox\n"
                 "   \\\\    /   O peration     | Website:  https://openfoam.org\n"
