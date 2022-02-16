@@ -36,23 +36,10 @@ int main() {
     double IR = 14.00; /// inner radius
     double A = lambda_2 * AR;
     double MR = IR - A; /// radius in the middle
-    int n = 10; /// number of blocks in a circle
+    int n = 30; /// number of blocks in a circle
     int m = 20; /// number of cells (2 blocks) in z direction
     double ang_radian = M_PI * 2. / n;
     double ang_degree = 360. / n;
-
-//    double X1_2 = IR * cos_ang;
-//    double Y1_2 = IR * sin_ang;
-//    double X1_1 = X1_2;
-//    double Y1_1 = -Y1_2;
-//    double X2_2 = OR * cos_ang;
-//    double Y2_2 = OR * sin_ang;
-//    double X2_1 = X2_2;
-//    double Y2_1 = -Y2_2;
-//    double X3_2 = MR * cos_ang;
-//    double Y3_2 = MR * sin_ang;
-//    double X3_1 = X3_2;
-//    double Y3_1 = -Y3_2;
 
     int v_i = 0; /// vertex index
     for (int j = 0; j < m; j++) {
@@ -66,25 +53,30 @@ int main() {
             double Oy = OR * s;
             double Ix = IR * c; // inner
             double Iy = IR * s;
+            meshFile << "    (" << Ox << " " << Oy << " " << z1 << ") // vertex " << v_i++ << "\n"
+                     << "    (" << Ix << " " << Iy << " " << z1 << ") // vertex " << v_i++ << "\n";
+        }
+        for (int i = 0; i < n; i++) {
+            double theta = ang_radian * i;
+            double c = cos(theta);
+            double s = sin(theta);
+            double Ox = OR * c; // outer
+            double Oy = OR * s;
             double Mx = MR * c; // middle
             double My = MR * s;
-            meshFile << "    (" << Ox << " " << Oy << " " << z1 << ") // vertex " << v_i++ << "\n"
-                     << "    (" << Ix << " " << Iy << " " << z1 << ") // vertex " << v_i++ << "\n"
-                     << "    (" << Mx << " " << My << " " << z2 << ") // vertex " << v_i++ << "\n"
-                     << "    (" << Ox << " " << Oy << " " << z2 << ") // vertex " << v_i++ << "\n";
+            meshFile << "    (" << Ox << " " << Oy << " " << z2 << ") // vertex " << v_i++ << "\n"
+                     << "    (" << Mx << " " << My << " " << z2 << ") // vertex " << v_i++ << "\n";
         }
     }
     double z = m * lambda;
     for (int i = 0; i < n; i++) {
-        double theta = -ang_radian * i;
+        double theta = ang_radian * i;
         double c = cos(theta);
         double s = sin(theta);
         double Ox = OR * c; // outer
         double Oy = OR * s;
         double Ix = IR * c; // inner
         double Iy = IR * s;
-        double Mx = MR * c; // middle
-        double My = MR * s;
         meshFile << "    (" << Ox << " " << Oy << " " << z << ") // vertex " << v_i++ << "\n"
                  << "    (" << Ix << " " << Iy << " " << z << ") // vertex " << v_i++ << "\n";
     }
@@ -94,28 +86,30 @@ int main() {
                 "(\n";
     for (int j = 0; j < m; j++) {
         for (int i = 0; i < n; i++) {
-            int index_i_j = 4 * (j * n + i);
-            int index_i_1_j = 4 * (j * n + (i + 1) % n);
+            int index11 = (2 * j * n + i) * 2;
+            int index12 = ((2 * j + 1) * n + i) * 2;
+            int index13 = (2 * (j + 1) * n + i) * 2;
+            int index21 = (2 * j * n + (i + 1) % n) * 2;
+            int index22 = ((2 * j + 1) * n + (i + 1) % n) * 2;
+            int index23 = (2 * (j + 1) * n + (i + 1) % n) * 2;
             meshFile << "     hex ("
-                     << index_i_j << " "
-                     << index_i_j + 1 << " "
-                     << index_i_j + 2 << " "
-                     << index_i_j + 3 << " "
-                     << index_i_1_j << " "
-                     << index_i_1_j + 1 << " "
-                     << index_i_1_j + 2 << " "
-                     << index_i_1_j + 3 << ") (60 80 1) simpleGrading (10 1 1)\n";
-            int index_i_j_1 = 4 * ((j + 1) * n + i);
-            int index_i_1_j_1 = 4 * ((j + 1) * n + (i + 1) % n);
+                     << index11 << " "
+                     << index11 + 1 << " "
+                     << index12 + 1 << " "
+                     << index12 << " "
+                     << index21 << " "
+                     << index21 + 1 << " "
+                     << index22 + 1 << " "
+                     << index22 << ") (60 80 1) simpleGrading (10 1 1)\n";
             meshFile << "     hex ("
-                     << index_i_j + 3 << " "
-                     << index_i_j + 2 << " "
-                     << index_i_j_1 + 1 << " "
-                     << index_i_j_1 << " "
-                     << index_i_1_j + 3 << " "
-                     << index_i_1_j + 2 << " "
-                     << index_i_1_j_1 + 1 << " "
-                     << index_i_1_j_1 << ") (60 80 1) simpleGrading (10 1 1)\n";
+                     << index12 << " "
+                     << index12 + 1 << " "
+                     << index13 + 1 << " "
+                     << index13 << " "
+                     << index22 << " "
+                     << index22 + 1 << " "
+                     << index23 + 1 << " "
+                     << index23 << ") (60 80 1) simpleGrading (10 1 1)\n";
         }
     }
     meshFile << ");\n"
@@ -123,18 +117,21 @@ int main() {
     meshFile << "edges\n"
                 "(\n";
     for (int i = 0; i < n; i++) {
-        for (int j = 0; j <= m; j++) {
-            int index1 = 4 * (j * n + i);
-            int index2 = 4 * (j * n + (i + 1) % n);
-            meshFile << "    arc " << index1 << " " << index2 << " " << ang_degree << " (0 0 1)\n";
-            meshFile << "    arc " << index1 + 1 << " " << index2 + 1 << " " << ang_degree << " (0 0 1)\n";
-        }
         for (int j = 0; j < m; j++) {
-            int index1 = 4 * (j * n + i) + 2;
-            int index2 = 4 * (j * n + (i + 1) % n) + 2;
-            meshFile << "    arc " << index1 << " " << index2 << " " << ang_degree << " (0 0 1)\n";
-            meshFile << "    arc " << index1 + 1 << " " << index2 + 1 << " " << ang_degree << " (0 0 1)\n";
+            int index11 = (2 * j * n + i) * 2;
+            int index12 = ((2 * j + 1) * n + i) * 2;
+            int index21 = (2 * j * n + (i + 1) % n) * 2;
+            int index22 = ((2 * j + 1) * n + (i + 1) % n) * 2;
+            meshFile << "    arc " << index11 << " " << index21 << " " << ang_degree << " (0 0 1)\n"
+                     << "    arc " << index11 + 1 << " " << index21 + 1 << " " << ang_degree << " (0 0 1)\n"
+                     << "    arc " << index12 << " " << index22 << " " << ang_degree << " (0 0 1)\n"
+                     << "    arc " << index12 + 1 << " " << index22 + 1 << " " << ang_degree << " (0 0 1)\n";
         }
+        int j = m;
+        int index11 = (2 * j * n + i) * 2;
+        int index21 = (2 * j * n + (i + 1) % n) * 2;
+        meshFile << "    arc " << index11 << " " << index21 << " " << ang_degree << " (0 0 1)\n";
+        meshFile << "    arc " << index11 + 1 << " " << index21 + 1 << " " << ang_degree << " (0 0 1)\n";
     }
     meshFile << ");\n"
                 "\n";
@@ -147,12 +144,22 @@ int main() {
                 "        (\n";
     for (int j = 0; j < m; j++) {
         for (int i = 0; i < n; i++) {
-            int index1 = 4 * (j * n + i) + 1;
-            int index2 = 4 * (j * n + (i + 1) % n) + 1;
-            meshFile << "            (" << index1 << " " << index1 + 1 << " " << index2 + 1 << " " << index2 << ")\n";
-            int index3 = 4 * ((j + 1) * n + i) + 1;
-            int index4 = 4 * ((j + 1) * n + (i + 1) % n) + 1;
-            meshFile << "            (" << index1 + 1 << " " << index3 << " " << index4 << " " << index2 + 1 << ")\n";
+            int index11 = (2 * j * n + i) * 2;
+            int index12 = ((2 * j + 1) * n + i) * 2;
+            int index13 = (2 * (j + 1) * n + i) * 2;
+            int index21 = (2 * j * n + (i + 1) % n) * 2;
+            int index22 = ((2 * j + 1) * n + (i + 1) % n) * 2;
+            int index23 = (2 * (j + 1) * n + (i + 1) % n) * 2;
+            meshFile << "            ("
+                     << index11 + 1 << " "
+                     << index12 + 1 << " "
+                     << index22 + 1 << " "
+                     << index21 + 1 << ")\n"
+                     << "            ("
+                     << index12 + 1 << " "
+                     << index13 + 1 << " "
+                     << index23 + 1 << " "
+                     << index22 + 1 << ")\n";
         }
     }
     meshFile << "        );\n"
@@ -164,12 +171,14 @@ int main() {
                 "        (\n";
     for (int j = 0; j < m; j++) {
         for (int i = 0; i < n; i++) {
-            int index1 = 4 * (j * n + i);
-            int index2 = 4 * (j * n + (i + 1) % n);
-            meshFile << "            (" << index1 + 3 << " " << index1 << " " << index2 << " " << index2 + 3 << ")\n";
-            int index3 = 4 * ((j + 1) * n + i);
-            int index4 = 4 * ((j + 1) * n + (i + 1) % n);
-            meshFile << "            (" << index3 << " " << index1 + 3 << " " << index2 + 3 << " " << index4 << ")\n";
+            int index11 = (2 * j * n + i) * 2;
+            int index12 = ((2 * j + 1) * n + i) * 2;
+            int index13 = (2 * (j + 1) * n + i) * 2;
+            int index21 = (2 * j * n + (i + 1) % n) * 2;
+            int index22 = ((2 * j + 1) * n + (i + 1) % n) * 2;
+            int index23 = (2 * (j + 1) * n + (i + 1) % n) * 2;
+            meshFile << "            (" << index12 << " " << index11 << " " << index21 << " " << index22 << ")\n"
+                     << "            (" << index13 << " " << index12 << " " << index22 << " " << index23 << ")\n";
         }
     }
     meshFile << "        );\n"
