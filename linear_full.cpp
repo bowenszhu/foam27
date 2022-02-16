@@ -59,7 +59,7 @@ int main() {
         double z1 = lambda * j;
         double z2 = z1 + lambda_2;
         for (int i = 0; i < n; i++) {
-            double theta = -ang_radian * i;
+            double theta = ang_radian * i;
             double c = cos(theta);
             double s = sin(theta);
             double Ox = OR * c; // outer
