@@ -5,6 +5,15 @@
 
 using namespace std;
 
+void compute_indices(int indices[2][3], const int i, const int j, const int n) {
+    indices[0][0] = (2 * j * n + i) * 2;
+    indices[0][1] = ((2 * j + 1) * n + i) * 2;
+    indices[0][2] = (2 * (j + 1) * n + i) * 2;
+    indices[1][0] = (2 * j * n + (i + 1) % n) * 2;
+    indices[1][1] = ((2 * j + 1) * n + (i + 1) % n) * 2;
+    indices[1][2] = (2 * (j + 1) * n + (i + 1) % n) * 2;
+}
+
 int main() {
     ofstream meshFile("blockMeshDict");
     meshFile << std::fixed << setprecision(12);
@@ -82,34 +91,30 @@ int main() {
     }
     meshFile << ");\n"
                 "\n";
+    int indices[2][3];
     meshFile << "blocks\n"
                 "(\n";
     for (int j = 0; j < m; j++) {
         for (int i = 0; i < n; i++) {
-            int index11 = (2 * j * n + i) * 2;
-            int index12 = ((2 * j + 1) * n + i) * 2;
-            int index13 = (2 * (j + 1) * n + i) * 2;
-            int index21 = (2 * j * n + (i + 1) % n) * 2;
-            int index22 = ((2 * j + 1) * n + (i + 1) % n) * 2;
-            int index23 = (2 * (j + 1) * n + (i + 1) % n) * 2;
+            compute_indices(indices, i, j, n);
             meshFile << "     hex ("
-                     << index11 << " "
-                     << index11 + 1 << " "
-                     << index12 + 1 << " "
-                     << index12 << " "
-                     << index21 << " "
-                     << index21 + 1 << " "
-                     << index22 + 1 << " "
-                     << index22 << ") (60 80 1) simpleGrading (10 1 1)\n"
+                     << indices[0][0] << " "
+                     << indices[0][0] + 1 << " "
+                     << indices[0][1] + 1 << " "
+                     << indices[0][1] << " "
+                     << indices[1][0] << " "
+                     << indices[1][0] + 1 << " "
+                     << indices[1][1] + 1 << " "
+                     << indices[1][1] << ") (60 80 1) simpleGrading (10 1 1)\n"
                      << "     hex ("
-                     << index12 << " "
-                     << index12 + 1 << " "
-                     << index13 + 1 << " "
-                     << index13 << " "
-                     << index22 << " "
-                     << index22 + 1 << " "
-                     << index23 + 1 << " "
-                     << index23 << ") (60 80 1) simpleGrading (10 1 1)\n";
+                     << indices[0][1] << " "
+                     << indices[0][1] + 1 << " "
+                     << indices[0][2] + 1 << " "
+                     << indices[0][2] << " "
+                     << indices[1][1] << " "
+                     << indices[1][1] + 1 << " "
+                     << indices[1][2] + 1 << " "
+                     << indices[1][2] << ") (60 80 1) simpleGrading (10 1 1)\n";
         }
     }
     meshFile << ");\n"
@@ -118,20 +123,35 @@ int main() {
                 "(\n";
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < m; j++) {
-            int index11 = (2 * j * n + i) * 2;
-            int index12 = ((2 * j + 1) * n + i) * 2;
-            int index21 = (2 * j * n + (i + 1) % n) * 2;
-            int index22 = ((2 * j + 1) * n + (i + 1) % n) * 2;
-            meshFile << "    arc " << index11 << " " << index21 << " " << ang_degree << " (0 0 1)\n"
-                     << "    arc " << index11 + 1 << " " << index21 + 1 << " " << ang_degree << " (0 0 1)\n"
-                     << "    arc " << index12 << " " << index22 << " " << ang_degree << " (0 0 1)\n"
-                     << "    arc " << index12 + 1 << " " << index22 + 1 << " " << ang_degree << " (0 0 1)\n";
+            compute_indices(indices, i, j, n);
+            meshFile << "    arc "
+                     << indices[0][0] << " "
+                     << indices[1][0] << " "
+                     << ang_degree << " (0 0 1)\n"
+                     << "    arc "
+                     << indices[0][0] + 1 << " "
+                     << indices[1][0] + 1 << " "
+                     << ang_degree << " (0 0 1)\n"
+                     << "    arc "
+                     << indices[0][1] << " "
+                     << indices[1][1] << " "
+                     << ang_degree << " (0 0 1)\n"
+                     << "    arc "
+                     << indices[0][1] + 1 << " "
+                     << indices[1][1] + 1 << " "
+                     << ang_degree
+                     << " (0 0 1)\n";
         }
         int j = m;
-        int index11 = (2 * j * n + i) * 2;
-        int index21 = (2 * j * n + (i + 1) % n) * 2;
-        meshFile << "    arc " << index11 << " " << index21 << " " << ang_degree << " (0 0 1)\n"
-                 << "    arc " << index11 + 1 << " " << index21 + 1 << " " << ang_degree << " (0 0 1)\n";
+        compute_indices(indices, i, j, n);
+        meshFile << "    arc "
+                 << indices[0][0] << " "
+                 << indices[1][0] << " "
+                 << ang_degree << " (0 0 1)\n"
+                 << "    arc "
+                 << indices[0][0] + 1 << " "
+                 << indices[1][0] + 1 << " "
+                 << ang_degree << " (0 0 1)\n";
     }
     meshFile << ");\n"
                 "\n";
@@ -144,22 +164,17 @@ int main() {
                 "        (\n";
     for (int j = 0; j < m; j++) {
         for (int i = 0; i < n; i++) {
-            int index11 = (2 * j * n + i) * 2;
-            int index12 = ((2 * j + 1) * n + i) * 2;
-            int index13 = (2 * (j + 1) * n + i) * 2;
-            int index21 = (2 * j * n + (i + 1) % n) * 2;
-            int index22 = ((2 * j + 1) * n + (i + 1) % n) * 2;
-            int index23 = (2 * (j + 1) * n + (i + 1) % n) * 2;
+            compute_indices(indices, i, j, n);
             meshFile << "            ("
-                     << index11 + 1 << " "
-                     << index12 + 1 << " "
-                     << index22 + 1 << " "
-                     << index21 + 1 << ")\n"
+                     << indices[0][0] + 1 << " "
+                     << indices[0][1] + 1 << " "
+                     << indices[1][1] + 1 << " "
+                     << indices[1][0] + 1 << ")\n"
                      << "            ("
-                     << index12 + 1 << " "
-                     << index13 + 1 << " "
-                     << index23 + 1 << " "
-                     << index22 + 1 << ")\n";
+                     << indices[0][1] + 1 << " "
+                     << indices[0][2] + 1 << " "
+                     << indices[1][2] + 1 << " "
+                     << indices[1][1] + 1 << ")\n";
         }
     }
     meshFile << "        );\n"
@@ -171,69 +186,21 @@ int main() {
                 "        (\n";
     for (int j = 0; j < m; j++) {
         for (int i = 0; i < n; i++) {
-            int index11 = (2 * j * n + i) * 2;
-            int index12 = ((2 * j + 1) * n + i) * 2;
-            int index13 = (2 * (j + 1) * n + i) * 2;
-            int index21 = (2 * j * n + (i + 1) % n) * 2;
-            int index22 = ((2 * j + 1) * n + (i + 1) % n) * 2;
-            int index23 = (2 * (j + 1) * n + (i + 1) % n) * 2;
-            meshFile << "            (" << index12 << " " << index11 << " " << index21 << " " << index22 << ")\n"
-                     << "            (" << index13 << " " << index12 << " " << index22 << " " << index23 << ")\n";
+            compute_indices(indices, i, j, n);
+            meshFile << "            ("
+                     << indices[0][1] << " "
+                     << indices[0][0] << " "
+                     << indices[1][0] << " "
+                     << indices[1][1] << ")\n"
+                     << "            ("
+                     << indices[0][2] << " "
+                     << indices[0][1] << " "
+                     << indices[1][1] << " "
+                     << indices[1][2] << ")\n";
         }
     }
     meshFile << "        );\n"
                 "    }\n";
-
-//    meshFile << "    down\n"
-//                "    {\n"
-//                "        type wedge;\n"
-//                "        faces\n"
-//                "        (\n";
-//    for (int i = 0; i < N - 1; i++) {
-//        int i4 = i * 4;
-//        meshFile << "            (" << i4 << " " << i4 + 1 << " " << i4 + 5 << " " << i4 + 4 << ")\n";
-//    }
-//    meshFile << "        );\n"
-//                "    }\n";
-//
-//    meshFile << "    left\n"
-//                "    {\n"
-//                "        type wedge;\n"
-//                "        faces\n"
-//                "        (\n";
-//    for (int i = 0; i < N - 1; i++) {
-//        int i4 = i * 4;
-//        meshFile << "            (" << i4 + 7 << " " << i4 + 6 << " " << i4 + 2 << " " << i4 + 3 << ")\n";
-//    }
-//    meshFile << "        );\n"
-//                "    }\n";
-
-//    meshFile << "    front\n"
-//                "    {\n"
-//                "        type cyclic;\n"
-//                "        neighbourPatch back\n"
-//                "        faces\n"
-//                "        (\n";
-//    for (int i = 0; i < n; i++) {
-//        int index1 = 4 * i;
-//        int index2 = 4 * ((i + 1) % n);
-//        meshFile << "            (" << index1 << " " << index1 + 1 << " " << index2 + 1 << " " << index2 << ")\n";
-//    }
-//    meshFile << "        );\n"
-//                "    }\n";
-//    meshFile << "    back \n"
-//                "    {\n"
-//                "        type cyclic;\n"
-//                "        neighbourPatch front\n"
-//                "        faces\n"
-//                "        (\n";
-//    for (int i = 0; i < n; i++) {
-//        int index1 = 4 * (m * n + i);
-//        int index2 = 4 * (m * n + (i + 1) % n);
-//        meshFile << "            (" << index1 + 1 << " " << index1 << " " << index2 << " " << index2 + 1 << ")\n";
-//    }
-//    meshFile << "        );\n"
-//                "    }\n";
     meshFile << ");\n"
                 "\n";
     meshFile << "mergePatchPairs\n"
