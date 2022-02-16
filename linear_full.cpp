@@ -100,8 +100,8 @@ int main() {
                      << index21 << " "
                      << index21 + 1 << " "
                      << index22 + 1 << " "
-                     << index22 << ") (60 80 1) simpleGrading (10 1 1)\n";
-            meshFile << "     hex ("
+                     << index22 << ") (60 80 1) simpleGrading (10 1 1)\n"
+                     << "     hex ("
                      << index12 << " "
                      << index12 + 1 << " "
                      << index13 + 1 << " "
@@ -130,8 +130,8 @@ int main() {
         int j = m;
         int index11 = (2 * j * n + i) * 2;
         int index21 = (2 * j * n + (i + 1) % n) * 2;
-        meshFile << "    arc " << index11 << " " << index21 << " " << ang_degree << " (0 0 1)\n";
-        meshFile << "    arc " << index11 + 1 << " " << index21 + 1 << " " << ang_degree << " (0 0 1)\n";
+        meshFile << "    arc " << index11 << " " << index21 << " " << ang_degree << " (0 0 1)\n"
+                 << "    arc " << index11 + 1 << " " << index21 + 1 << " " << ang_degree << " (0 0 1)\n";
     }
     meshFile << ");\n"
                 "\n";
