@@ -8,3 +8,5 @@ add_executable(foam27 [Semi_Dynamic]TC_cell_small_angle_higherOrder_polyLine2.cp
 add_executable(foam27_linear linear_arc.cpp)
 
 add_executable(foam27_linear_full linear_full.cpp)
+
+add_executable(foam27_triangle triangle.cpp)
