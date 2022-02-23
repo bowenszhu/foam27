@@ -43,7 +43,7 @@ int main() {
     double lambda_2 = lambda / 2.; /// lambda / 2
     double R_inner = 14.00; /// inner radius
     double A = lambda_2 * AR;
-    int n = 20; /// number of blocks in a circle
+    int n = 10; /// number of blocks in a circle
     int m = 21; /// number of cells (2 blocks) in z_peak_bottom direction
     double ang_radian = M_PI * 2. / n;
     double ang_degree = 360. / n;
@@ -54,6 +54,8 @@ int main() {
     double R_peak_max = R_peak_min * exp(tan_alpha * ang_radian);
     double R_valley_min = R_peak_min - A;
     double R_valley_max = R_peak_max - A;
+    int N_poly = 100;
+    double ang_poly = ang_radian / (N_poly + 1);
 
     int v_i = 0; /// vertex index
     for (int j = 0; j < m; j++) {
@@ -181,38 +183,58 @@ int main() {
     meshFile << "edges\n"
                 "(\n";
     for (int i = 0; i < n; i++) {
+        double ang_block_1 = 2. * M_PI * (i + 1) / n;
+        double x_peak_poly[N_poly];
+        double y_peak_poly[N_poly];
+        double x_valley_poly[N_poly];
+        double y_valley_poly[N_poly];
+        for (int k = 0; k < N_poly; k++) {
+            double ang_local = ang_poly * (k + 1);
+            double ang_global = ang_block_1 - ang_local;
+            double R_poly = R_peak_min * exp(tan_alpha * ang_local);
+            x_peak_poly[k] = R_poly * cos(ang_global);
+            y_peak_poly[k] = R_poly * sin(ang_global);
+            x_valley_poly[k] = x_peak_poly[k] - A;
+            y_valley_poly[k] = y_peak_poly[k] - A;
+        }
         for (int j = 0; j < m; j++) {
             compute_indices(indices, i, j, n);
             meshFile << "    arc "
                      << indices[0][0] << " "
                      << indices[1][0] << " "
-                     << ang_degree << " (0 0 1)\n"
-                     //                     << "    arc "
-                     //                     << indices[0][0] + 1 << " "
-                     //                     << indices[1][0] + 1 << " "
-                     //                     << ang_degree << " (0 0 1)\n"
-                     << "    arc "
+                     << ang_degree << " (0 0 1)\n";
+            meshFile << "    polyLine "
+                     << indices[1][0] + 2 << " "
+                     << indices[0][0] + 1 << " (";
+            double z_peak = lambda * j;
+            for (int k = 0; k < N_poly; k++)
+                meshFile << "(" << x_peak_poly[k] << " " << y_peak_poly[k] << " " << z_peak << ") ";
+            meshFile << ")\n";
+            meshFile << "    arc "
                      << indices[0][1] << " "
                      << indices[1][1] << " "
-                     << ang_degree << " (0 0 1)\n"
-//                     << "    arc "
-//                     << indices[0][1] + 1 << " "
-//                     << indices[1][1] + 1 << " "
-//                     << ang_degree
-//                     << " (0 0 1)\n"
-                    ;
+                     << ang_degree << " (0 0 1)\n";
+            meshFile << "    polyLine "
+                     << indices[1][1] + 2 << " "
+                     << indices[0][1] + 1 << " (";
+            double z_valley = z_peak + lambda_2;
+            for (int k = 0; k < N_poly; k++)
+                meshFile << "(" << x_valley_poly[k] << " " << y_valley_poly[k] << " " << z_valley << ") ";
+            meshFile << ")\n";
         }
+        double z_peak_bottom = m * lambda;
         int j = m;
         compute_indices(indices, i, j, n);
         meshFile << "    arc "
                  << indices[0][0] << " "
                  << indices[1][0] << " "
-                 << ang_degree << " (0 0 1)\n"
-//                 << "    arc "
-//                 << indices[0][0] + 1 << " "
-//                 << indices[1][0] + 1 << " "
-//                 << ang_degree << " (0 0 1)\n"
-                ;
+                 << ang_degree << " (0 0 1)\n";
+        meshFile << "    polyLine "
+                 << indices[1][0] + 2 << " "
+                 << indices[0][0] + 1 << " (";
+        for (int k = 0; k < N_poly; k++)
+            meshFile << "(" << x_peak_poly[k] << " " << y_peak_poly[k] << " " << z_peak_bottom << ") ";
+        meshFile << ")\n";
     }
     meshFile << ");\n"
                 "\n";
