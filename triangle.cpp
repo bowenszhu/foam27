@@ -44,10 +44,10 @@ int main() {
     double R_inner = 14.00; /// inner radius
     double A = lambda_2 * AR;
     int n = 10; /// number of blocks in a circle
-    int m = 21; /// number of cells (2 blocks) in z_peak_bottom direction
+    int m = 1; /// number of cells (2 blocks) in z_peak_bottom direction
     double ang_radian = M_PI * 2. / n;
     double ang_degree = 360. / n;
-    double alpha = M_PI / 5.;
+    double alpha = .15;
     double tan_alpha = tan(alpha);
     double temp = tan_alpha * 4. * M_PI / n;
     double R_peak_min = R_inner * sqrt(temp / (exp(temp) - 1.));
@@ -148,7 +148,7 @@ int main() {
                      << indices[1][0] << " "
                      << indices[1][0] + 1 << " "
                      << indices[1][1] + 1 << " "
-                     << indices[1][1] << ") (60 80 1) simpleGrading (2 3 1)\n"
+                     << indices[1][1] << ") (10 20 30) simpleGrading (2 3 1)\n"
                      << "     hex ("
                      << indices[0][1] << " "
                      << indices[0][1] + 1 << " "
@@ -157,7 +157,7 @@ int main() {
                      << indices[1][1] << " "
                      << indices[1][1] + 1 << " "
                      << indices[1][2] + 1 << " "
-                     << indices[1][2] << ") (60 80 1) simpleGrading (2 3 1)\n"
+                     << indices[1][2] << ") (10 20 30) simpleGrading (2 3 1)\n"
                      << "     hex ("
                      << indices[1][0] + 1 << " "
                      << indices[1][1] + 1 << " "
@@ -166,7 +166,7 @@ int main() {
                      << indices[0][0] + 1 << " "
                      << indices[0][1] + 1 << " "
                      << indices[0][1] + 1 << " "
-                     << indices[0][0] + 1 << ") (80 60 1) simpleGrading (3 2 1)\n"
+                     << indices[0][0] + 1 << ") (20 10 30) simpleGrading (3 2 1)\n"
                      << "     hex ("
                      << indices[1][1] + 1 << " "
                      << indices[1][2] + 1 << " "
@@ -175,7 +175,7 @@ int main() {
                      << indices[0][1] + 1 << " "
                      << indices[0][2] + 1 << " "
                      << indices[0][2] + 1 << " "
-                     << indices[0][1] + 1 << ") (80 60 1) simpleGrading (3 2 1)\n";
+                     << indices[0][1] + 1 << ") (20 10 30) simpleGrading (3 2 1)\n";
         }
     }
     meshFile << ");\n"
