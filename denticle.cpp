@@ -44,7 +44,7 @@ int main() {
     double R_inner = 14.00; /// inner radius
     double A = lambda_2 * AR;
     int n = 10; /// number of blocks in a circle
-    int m = 1; /// number of cells (2 blocks) in z_peak_bottom direction
+    int m = 3; /// number of cells (2 blocks) in z_peak_bottom direction
     double ang_radian = M_PI * 2. / n;
     double ang_degree = 360. / n;
     double alpha = .15;
@@ -191,30 +191,41 @@ int main() {
         for (int k = 0; k < N_poly; k++) {
             double ang_local = ang_poly * (k + 1);
             double ang_global = ang_block_1 - ang_local;
-            double R_poly = R_peak_min * exp(tan_alpha * ang_local);
-            x_peak_poly[k] = R_poly * cos(ang_global);
-            y_peak_poly[k] = R_poly * sin(ang_global);
-            x_valley_poly[k] = x_peak_poly[k] - A;
-            y_valley_poly[k] = y_peak_poly[k] - A;
+            double R_peak_poly = R_peak_min * exp(tan_alpha * ang_local);
+            double R_valley_poly = R_peak_poly - A;
+            double c = cos(ang_global);
+            double s = sin(ang_global);
+            x_peak_poly[k] = R_peak_poly * c;
+            y_peak_poly[k] = R_peak_poly * s;
+            x_valley_poly[k] = R_valley_poly * c;
+            y_valley_poly[k] = R_valley_poly * s;
         }
         for (int j = 0; j < m; j++) {
             compute_indices(indices, i, j, n);
-            meshFile << "    arc "
+            meshFile << "    arc " // outer peak
                      << indices[0][0] << " "
                      << indices[1][0] << " "
+                     << ang_degree << " (0 0 1)\n"
+                     << "    arc " // inner peak R_max
+                     << indices[0][0] + 1 << " "
+                     << indices[1][0] + 1 << " "
                      << ang_degree << " (0 0 1)\n";
-            meshFile << "    polyLine "
+            meshFile << "    polyLine " // denticle peak
                      << indices[1][0] + 2 << " "
                      << indices[0][0] + 1 << " (";
             double z_peak = lambda * j;
             for (int k = 0; k < N_poly; k++)
                 meshFile << "(" << x_peak_poly[k] << " " << y_peak_poly[k] << " " << z_peak << ") ";
             meshFile << ")\n";
-            meshFile << "    arc "
+            meshFile << "    arc " // outer valley
                      << indices[0][1] << " "
                      << indices[1][1] << " "
+                     << ang_degree << " (0 0 1)\n"
+                     << "    arc " // inner valley R_max
+                     << indices[0][1] + 1 << " "
+                     << indices[1][1] + 1 << " "
                      << ang_degree << " (0 0 1)\n";
-            meshFile << "    polyLine "
+            meshFile << "    polyLine " // denticle valley
                      << indices[1][1] + 2 << " "
                      << indices[0][1] + 1 << " (";
             double z_valley = z_peak + lambda_2;
@@ -225,11 +236,15 @@ int main() {
         double z_peak_bottom = m * lambda;
         int j = m;
         compute_indices(indices, i, j, n);
-        meshFile << "    arc "
+        meshFile << "    arc " // bottom outer peak
                  << indices[0][0] << " "
                  << indices[1][0] << " "
+                 << ang_degree << " (0 0 1)\n"
+                 << "    arc " // inner peak R_max
+                 << indices[0][0] + 1 << " "
+                 << indices[1][0] + 1 << " "
                  << ang_degree << " (0 0 1)\n";
-        meshFile << "    polyLine "
+        meshFile << "    polyLine " // bottom denticle peak
                  << indices[1][0] + 2 << " "
                  << indices[0][0] + 1 << " (";
         for (int k = 0; k < N_poly; k++)

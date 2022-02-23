@@ -9,4 +9,4 @@ add_executable(foam27_linear linear_arc.cpp)
 
 add_executable(foam27_linear_full linear_full.cpp)
 
-add_executable(foam27_triangle triangle.cpp)
+add_executable(foam27_denticle denticle.cpp)
