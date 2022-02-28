@@ -148,7 +148,7 @@ int main() {
                      << indices[1][0] << " "
                      << indices[1][0] + 1 << " "
                      << indices[1][1] + 1 << " "
-                     << indices[1][1] << ") (10 20 30) simpleGrading (2 3 1)\n"
+                     << indices[1][1] << ") (10 20 30) simpleGrading (0.5 3 1)\n"
                      << "     hex ("
                      << indices[0][1] << " "
                      << indices[0][1] + 1 << " "
@@ -157,7 +157,7 @@ int main() {
                      << indices[1][1] << " "
                      << indices[1][1] + 1 << " "
                      << indices[1][2] + 1 << " "
-                     << indices[1][2] << ") (10 20 30) simpleGrading (2 3 1)\n"
+                     << indices[1][2] << ") (10 20 30) simpleGrading (0.5 3 1)\n"
                      << "     hex ("
                      << indices[1][0] + 1 << " "
                      << indices[1][1] + 1 << " "
@@ -166,7 +166,7 @@ int main() {
                      << indices[0][0] + 1 << " "
                      << indices[0][1] + 1 << " "
                      << indices[0][1] + 1 << " "
-                     << indices[0][0] + 1 << ") (20 10 30) simpleGrading (3 2 1)\n"
+                     << indices[0][0] + 1 << ") (20 10 30) simpleGrading (3 0.5 1)\n"
                      << "     hex ("
                      << indices[1][1] + 1 << " "
                      << indices[1][2] + 1 << " "
@@ -175,7 +175,7 @@ int main() {
                      << indices[0][1] + 1 << " "
                      << indices[0][2] + 1 << " "
                      << indices[0][2] + 1 << " "
-                     << indices[0][1] + 1 << ") (20 10 30) simpleGrading (3 2 1)\n";
+                     << indices[0][1] + 1 << ") (20 10 30) simpleGrading (3 0.5 1)\n";
         }
     }
     meshFile << ");\n"
