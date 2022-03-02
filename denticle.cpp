@@ -309,6 +309,48 @@ int main() {
     }
     meshFile << "        );\n"
                 "    }\n";
+    meshFile << "    front\n"
+                "    {\n";
+    meshFile << "         type cyclic;\n"
+                "         neighbourPatch back;\n"
+                "         faces\n"
+                "         (\n";
+    for (int i = 0; i < n; i++) {
+        compute_indices(indices, i, 0, n);
+        meshFile << "            ("
+                 << indices[0][0] << " "
+                 << indices[0][0] + 1 << " "
+                 << indices[1][0] + 1 << " "
+                 << indices[1][0] << ")\n"
+                 << "            ("
+                 << indices[0][0] + 1 << " "
+                 << indices[0][0] + 1 << " "
+                 << indices[1][0] + 2 << " "
+                 << indices[1][0] + 1 << ")\n";
+    }
+    meshFile << "         );\n"
+                "    }\n";
+    meshFile << "    back\n"
+                "    {\n";
+    meshFile << "         type cyclic;\n"
+                "         neighbourPatch front;\n"
+                "         faces\n"
+                "         (\n";
+    for (int i = 0; i < n; i++) {
+        compute_indices(indices, i, m, n);
+        meshFile << "            ("
+                 << indices[0][0] + 1 << " "
+                 << indices[0][0] << " "
+                 << indices[1][0] << " "
+                 << indices[1][0] + 1 << ")\n"
+                 << "            ("
+                 << indices[0][0] + 1 << " "
+                 << indices[0][0] + 1 << " "
+                 << indices[1][0] + 1 << " "
+                 << indices[1][0] + 2 << ")\n";
+    }
+    meshFile << "         );\n"
+                "    }\n";
     meshFile << ");\n"
                 "\n";
     meshFile << "mergePatchPairs\n"
