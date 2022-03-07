@@ -26,6 +26,7 @@ int main() {
                 "\\*---------------------------------------------------------------------------*/\n\n"
                 "FoamFile\n"
                 "{\n"
+                "    version     8;\n"
                 "    format      ascii;\n"
                 "    class       dictionary;\n"
                 "    object      blockMeshDict;\n"
