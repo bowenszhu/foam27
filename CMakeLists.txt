@@ -7,4 +7,7 @@ add_executable(foam27 [Semi_Dynamic]TC_cell_small_angle_higherOrder_polyLine2.cp
 
 add_executable(foam27_linear linear.cpp)
 
-add_executable(foam27_denticle denticle.cpp)
+add_executable(foam27_denticle
+        denticle.cpp
+        TEdgeSpace.cpp
+        TEdgeSpace.h)

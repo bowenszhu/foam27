@@ -2,6 +2,7 @@
 #include <iostream>
 #include <math.h>
 #include <iomanip>
+#include "TEdgeSpace.h"
 
 using namespace std;
 
@@ -57,6 +58,11 @@ int main() {
     double R_valley_max = R_peak_max - A;
     int N_poly = 100;
     double ang_poly = ang_radian / (N_poly + 1);
+    int n_R_outer = 10; // number of cells in R direction in outer part
+    int n_R_denticle = 10; // number of cells in R direction in denticle part
+    TEdgeSpace ES; // a grading calculator
+    ES.calc("de", "n", R_outer - R_valley_max, (R_peak_max - R_peak_min) / n_R_denticle, n_R_outer);
+    double r_outer_R = ES.getr(); // expansion ratio in R direction in outer part
 
     int v_i = 0; /// vertex index
     for (int j = 0; j < m; j++) {
@@ -149,7 +155,7 @@ int main() {
                      << indices[1][0] << " "
                      << indices[1][0] + 1 << " "
                      << indices[1][1] + 1 << " "
-                     << indices[1][1] << ") (10 20 30) simpleGrading (0.5 3 1)\n"
+                     << indices[1][1] << ") (" << n_R_outer << " 20 30) simpleGrading (" << r_outer_R << " 1 1)\n"
                      << "     hex ("
                      << indices[0][1] << " "
                      << indices[0][1] + 1 << " "
@@ -158,7 +164,7 @@ int main() {
                      << indices[1][1] << " "
                      << indices[1][1] + 1 << " "
                      << indices[1][2] + 1 << " "
-                     << indices[1][2] << ") (10 20 30) simpleGrading (0.5 3 1)\n"
+                     << indices[1][2] << ") (" << n_R_outer << " 20 30) simpleGrading (" << r_outer_R << " 1 1)\n"
                      << "     hex ("
                      << indices[1][0] + 1 << " "
                      << indices[1][1] + 1 << " "
@@ -167,7 +173,7 @@ int main() {
                      << indices[0][0] + 1 << " "
                      << indices[0][1] + 1 << " "
                      << indices[0][1] + 1 << " "
-                     << indices[0][0] + 1 << ") (20 10 30) simpleGrading (3 0.5 1)\n"
+                     << indices[0][0] + 1 << ") (20 " << n_R_denticle << " 30) simpleGrading (1 1 1)\n"
                      << "     hex ("
                      << indices[1][1] + 1 << " "
                      << indices[1][2] + 1 << " "
@@ -176,7 +182,7 @@ int main() {
                      << indices[0][1] + 1 << " "
                      << indices[0][2] + 1 << " "
                      << indices[0][2] + 1 << " "
-                     << indices[0][1] + 1 << ") (20 10 30) simpleGrading (3 0.5 1)\n";
+                     << indices[0][1] + 1 << ") (20 " << n_R_denticle << " 30) simpleGrading (1 1 1)\n";
         }
     }
     meshFile << ");\n"
