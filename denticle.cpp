@@ -61,7 +61,11 @@ int main() {
     int n_R_outer = 10; // number of cells in R direction in outer part
     int n_R_denticle = 10; // number of cells in R direction in denticle part
     TEdgeSpace ES; // a grading calculator
-    ES.calc("de", "n", R_outer - R_valley_max, (R_peak_max - R_peak_min) / n_R_denticle, n_R_outer);
+    ES.calc("de", // [arg1] end cell size
+            "n", // [arg2] number of cells
+            R_outer - R_valley_max, // length
+            (R_peak_max - R_peak_min) / n_R_denticle, // [arg1]
+            n_R_outer); // [arg2]
     double r_outer_R = ES.getr(); // expansion ratio in R direction in outer part
 
     int v_i = 0; /// vertex index
