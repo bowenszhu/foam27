@@ -44,7 +44,7 @@ int main() {
     double R_inner = 14.00; /// inner radius
     double A = lambda_2 * AR;
     int n = 10; /// number of blocks in a circle
-    int m = 3; /// number of cells (2 blocks) in z_peak_bottom direction
+    int m = 1; /// number of cells (2 blocks) in z_peak_bottom direction
     double ang_radian = M_PI * 2. / n;
     double ang_degree = 360. / n;
     double alpha = .15;
