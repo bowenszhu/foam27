@@ -5,11 +5,13 @@
 
 using namespace std;
 
-void compute_indices(int indices[2][2], const int i, const int j, const int n) {
-    indices[0][0] = (2 * j * n + i) * 3;
-    indices[0][1] = ((2 * j + 1) * n + i) * 3;
-    indices[1][0] = (2 * j * n + (i + 1) % n) * 3;
-    indices[1][1] = ((2 * j + 1) * n + (i + 1) % n) * 3;
+void compute_indices(int indices[2][3], const int i, const int j, const int n) {
+    indices[0][0] = (2 * j * n + i) * 2;
+    indices[0][1] = ((2 * j + 1) * n + i) * 2;
+    indices[0][2] = (2 * (j + 1) * n + i) * 2;
+    indices[1][0] = (2 * j * n + (i + 1) % n) * 2;
+    indices[1][1] = ((2 * j + 1) * n + (i + 1) % n) * 2;
+    indices[1][2] = (2 * (j + 1) * n + (i + 1) % n) * 2;
 }
 
 int main() {
@@ -107,7 +109,7 @@ int main() {
     }
     meshFile << ");\n"
                 "\n";
-    int indices[2][2];
+    int indices[2][3];
     meshFile << "blocks\n"
                 "(\n";
     for (int j = 0; j < m; j++) {
@@ -138,7 +140,6 @@ int main() {
     meshFile << "edges\n"
                 "(\n";
     for (int i = 0; i < n; i++) {
-        double ang_block_1 = 2. * M_PI * (i + 1) / n;
         for (int j = 0; j < m; j++) {
             compute_indices(indices, i, j, n);
             meshFile << "    arc " // outer peak
