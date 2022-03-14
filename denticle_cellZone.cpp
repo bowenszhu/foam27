@@ -16,7 +16,7 @@ void compute_indices(int indices[2][3], const int i, const int j, const int n) {
     indices[1][2] = (2 * (j + 1) * n + (i + 1) % n) * 3;
 }
 
-int main(int argc, const char* argv[]) {
+int main(int argc, char** argv) {
     ofstream meshFile("blockMeshDict");
     meshFile << std::fixed << setprecision(12)
              << "/*--------------------------------*- C++ -*----------------------------------*\\\n"
@@ -49,7 +49,7 @@ int main(int argc, const char* argv[]) {
 
     int n = 10; /// number of blocks in a circle
     double alpha = .15;
-    if (argc > 1) { // read from program arguments
+    if (argc == 3) { // read from program arguments
         alpha = std::atof(argv[1]);
         n = std::atoi(argv[2]);
     }
