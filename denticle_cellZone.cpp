@@ -2,6 +2,7 @@
 #include <iostream>
 #include <math.h>
 #include <iomanip>
+#include <cstdlib>
 #include "TEdgeSpace.h"
 
 using namespace std;
@@ -15,7 +16,7 @@ void compute_indices(int indices[2][3], const int i, const int j, const int n) {
     indices[1][2] = (2 * (j + 1) * n + (i + 1) % n) * 3;
 }
 
-int main() {
+int main(int argc, const char* argv[]) {
     ofstream meshFile("blockMeshDict");
     meshFile << std::fixed << setprecision(12)
              << "/*--------------------------------*- C++ -*----------------------------------*\\\n"
@@ -45,11 +46,17 @@ int main() {
     double lambda_2 = lambda / 2.; /// lambda / 2
     double R_inner = 14.00; /// inner radius
     double A = lambda_2 * AR;
+
     int n = 10; /// number of blocks in a circle
+    double alpha = .15;
+    if (argc > 1) { // read from program arguments
+        alpha = std::atof(argv[1]);
+        n = std::atoi(argv[2]);
+    }
+
     int m = 1; /// number of cells (2 blocks) in z_peak_bottom direction
     double ang_radian = M_PI * 2. / n;
     double ang_degree = 360. / n;
-    double alpha = .15;
     double tan_alpha = tan(alpha);
     double temp = tan_alpha * 4. * M_PI / n;
     double R_peak_min = R_inner * sqrt(temp / (exp(temp) - 1.));
