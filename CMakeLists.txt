@@ -11,8 +11,3 @@ add_executable(denticle
         denticle.cpp
         TEdgeSpace.cpp
         TEdgeSpace.h)
-
-add_executable(denticle_cellZone
-        denticle_cellZone.cpp
-        TEdgeSpace.cpp
-        TEdgeSpace.h)
