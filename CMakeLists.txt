@@ -11,3 +11,5 @@ add_executable(denticle
         denticle.cpp
         TEdgeSpace.cpp
         TEdgeSpace.h)
+
+add_executable(decompose decompose.cpp)
