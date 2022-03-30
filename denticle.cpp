@@ -50,10 +50,10 @@ int main(int argc, char *argv[]) {
     // read arguments if provided
     const double alpha = argc > 1 ? std::atof(argv[1]) : .15; /// angle parameter of denticle [rad]
     const int n = argc > 2 ? std::atoi(argv[2]) : 10; /// number of blocks in a circle
-    const int n_R_outer = argc > 3 ? std::atoi(argv[3]) : 10; /// number of cells in R direction in outer part
+    const int n_R_outer = argc > 3 ? std::atoi(argv[3]) : 24; /// number of cells in R direction in outer part
     const int n_R_denticle = argc > 4 ? std::atoi(argv[4]) : 10; /// number of cells in R direction in denticle part
-    const int n_theta = argc > 5 ? std::atoi(argv[5]) : 30; /// number of cells in theta direction for both parts
-    const int n_z = argc > 6 ? std::atoi(argv[6]) : 20; /// number of cells in z direction
+    const int n_theta = argc > 5 ? std::atoi(argv[5]) : 69; /// number of cells in theta direction for both parts
+    const int n_z = argc > 6 ? std::atoi(argv[6]) : 7; /// number of cells in z direction
     cout << "Constructing blockMeshDict\n"
             "angle of denticle, alpha = "
          << alpha
