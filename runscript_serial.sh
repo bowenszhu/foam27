@@ -19,41 +19,29 @@ export n_R_denticle=$SLURM_ARRAY_TASK_ID # number of cells in R direction in den
 export n_theta=69                        # number of cells in theta direction for both parts
 export n_z=7                             # number of cells in z direction
 
-#export MPI_NP=6
-
 export folder="denticle_R_denticle_${SLURM_JOB_ID}_${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}"
-if ! [ -d "$folder" ]; then
-  cp -r denticle/ "$folder" # create new OpenFOAM folder
-  {
-    echo "alpha=${alpha}"
-    echo "n_denticle=${n_denticle}"
-    echo "n_R_outer=${n_R_outer}"
-    echo "n_R_denticle=${n_R_denticle}"
-    echo "n_theta=${n_theta}"
-    echo "n_z=${n_z}"
-    #echo "MPI_NP=${MPI_NP}"
-  } >"$folder"/README.md
 
-  cd "$folder"/create_mesh/ || exit
-  cmake .
-  cmake --build . --target denticle
-  #cmake --build . --target decompose
-  cd ..
+cp -r denticle/ "$folder" # create new OpenFOAM folder
+{
+  echo "alpha=${alpha}"
+  echo "n_denticle=${n_denticle}"
+  echo "n_R_outer=${n_R_outer}"
+  echo "n_R_denticle=${n_R_denticle}"
+  echo "n_theta=${n_theta}"
+  echo "n_z=${n_z}"
+} >"$folder"/README.md
 
-  ./create_mesh/denticle $alpha $n_denticle $n_R_outer "$n_R_denticle" $n_theta $n_z # create blockMeshDict
-  mv blockMeshDict system/
+cd "$folder"/create_mesh/ || exit
+cmake .
+cmake --build . --target denticle
+cd ..
 
-  #./create_mesh/decompose MPI_NP # create decomposeParDict
-  #mv decomposeParDict system/
-fi
+./create_mesh/denticle $alpha $n_denticle $n_R_outer "$n_R_denticle" $n_theta $n_z # create blockMeshDict
+mv blockMeshDict system/
 
 singularity exec ../fertinaz-hpc_openfoam_of-8.sif blockMesh # generate meshes
-#singularity exec ../fertinaz-hpc_openfoam_of-8.sif decomposePar # decompose a mesh and fields for parallel execution
-
-#singularity exec ../fertinaz-hpc_openfoam_of-8.sif export MPI_BUFFER_SIZE=2000000000
-#mpirun -np $MPI_NP singularity exec ../fertinaz-hpc_openfoam_of-8.sif simpleFoam -parallel >log &
 singularity exec ../fertinaz-hpc_openfoam_of-8.sif simpleFoam >log
 
-#pgrep -f mpirun -a # print mpi process IDs
+singularity exec ../fertinaz-hpc_openfoam_of-8.sif foamLog log
 
 echo "finished"
