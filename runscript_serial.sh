@@ -1,10 +1,10 @@
 #!/bin/bash
-#SBATCH --job-name=openfoam_%A_%a
+#SBATCH --job-name=openfoam
 #SBATCH --nodes=1              # Number of nodes
 #SBATCH -c 1                   # Number of cores
 #SBATCH -t 0-08:00             # Runtime in D-HH:MM, minimum of 10 minutes
 #SBATCH -p shared              # Partition to submit to
-#SBATCH --mem=2000             # Memory pool for all cores (see also --mem-per-cpu)
+#SBATCH --mem=1000             # Memory pool for all cores (see also --mem-per-cpu)
 #SBATCH -o myoutput_%A_%a.out  # File to which STDOUT will be written, %j inserts jobid
 #SBATCH -e myerrors_%A_%a.err  # File to which STDERR will be written, %j inserts jobid
 
@@ -21,7 +21,7 @@ export n_z=7                             # number of cells in z direction
 
 #export MPI_NP=6
 
-export folder="denticle_${SLURM_JOB_ID}"
+export folder="denticle_R_denticle_${SLURM_JOB_ID}_${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}"
 if ! [ -d "$folder" ]; then
   cp -r denticle/ "$folder" # create new OpenFOAM folder
   {
@@ -37,7 +37,7 @@ if ! [ -d "$folder" ]; then
   cd "$folder"/create_mesh/ || exit
   cmake .
   cmake --build . --target denticle
-  cmake --build . --target decompose
+  #cmake --build . --target decompose
   cd ..
 
   ./create_mesh/denticle $alpha $n_denticle $n_R_outer "$n_R_denticle" $n_theta $n_z # create blockMeshDict
@@ -48,10 +48,12 @@ if ! [ -d "$folder" ]; then
 fi
 
 singularity exec ../fertinaz-hpc_openfoam_of-8.sif blockMesh    # generate meshes
-singularity exec ../fertinaz-hpc_openfoam_of-8.sif decomposePar # decompose a mesh and fields for parallel execution
+#singularity exec ../fertinaz-hpc_openfoam_of-8.sif decomposePar # decompose a mesh and fields for parallel execution
 
 #singularity exec ../fertinaz-hpc_openfoam_of-8.sif export MPI_BUFFER_SIZE=2000000000
 #mpirun -np $MPI_NP singularity exec ../fertinaz-hpc_openfoam_of-8.sif simpleFoam -parallel >log &
-singularity exec ../fertinaz-hpc_openfoam_of-8.sif simpleFoam >log &
+singularity exec ../fertinaz-hpc_openfoam_of-8.sif simpleFoam >log
 
 #pgrep -f mpirun -a # print mpi process IDs
+
+echo "finished"
