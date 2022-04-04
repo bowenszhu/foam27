@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --job-name=openfoam
-#SBATCH --nodes=1              # Number of nodes
+#SBATCH -N 1                   # Number of nodes
 #SBATCH -c 1                   # Number of cores
 #SBATCH -t 0-08:00             # Runtime in D-HH:MM, minimum of 10 minutes
 #SBATCH -p shared              # Partition to submit to
@@ -8,7 +8,12 @@
 #SBATCH -o myoutput_%A_%a.out  # File to which STDOUT will be written, %j inserts jobid
 #SBATCH -e myerrors_%A_%a.err  # File to which STDERR will be written, %j inserts jobid
 
-module load GCCcore/8.2.0 CMake/3.14.4 #gcc/10.2.0-fasrc01 openmpi/4.1.1-fasrc01
+set -o xtrace # print command
+
+module load GCCcore/8.2.0 CMake/3.14.4
+
+cd "$SCRATCH"/raayai_ardakani_lab/bszhu || exit
+cp -R ~/openfoam/ .
 
 cd openfoam/ || exit
 
@@ -22,14 +27,20 @@ export n_z=7                             # number of cells in z direction
 export folder="denticle_R_denticle_${SLURM_JOB_ID}_${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}"
 
 cp -r denticle/ "$folder" # create new OpenFOAM folder
-{
+
+function echo_configurations {
   echo "alpha=${alpha}"
   echo "n_denticle=${n_denticle}"
   echo "n_R_outer=${n_R_outer}"
   echo "n_R_denticle=${n_R_denticle}"
   echo "n_theta=${n_theta}"
   echo "n_z=${n_z}"
-} >"$folder"/README.md
+  echo "SLURM_JOB_ID=${SLURM_JOB_ID}"
+  echo "SLURM_ARRAY_JOB_ID=${SLURM_ARRAY_JOB_ID}"
+  echo "SLURM_ARRAY_TASK_ID=${SLURM_ARRAY_TASK_ID}"
+}
+echo_configurations
+echo_configurations >"$folder"/README.md
 
 cd "$folder"/create_mesh/ || exit
 cmake .
