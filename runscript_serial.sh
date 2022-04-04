@@ -47,7 +47,7 @@ if ! [ -d "$folder" ]; then
   #mv decomposeParDict system/
 fi
 
-singularity exec ../fertinaz-hpc_openfoam_of-8.sif blockMesh    # generate meshes
+singularity exec ../fertinaz-hpc_openfoam_of-8.sif blockMesh # generate meshes
 #singularity exec ../fertinaz-hpc_openfoam_of-8.sif decomposePar # decompose a mesh and fields for parallel execution
 
 #singularity exec ../fertinaz-hpc_openfoam_of-8.sif export MPI_BUFFER_SIZE=2000000000
