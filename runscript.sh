@@ -1,21 +1,16 @@
 #!/bin/bash
 #SBATCH --job-name=openfoam
-#SBATCH -N 1                # Number of nodes
-#SBATCH -c 6                # Number of cores
-#SBATCH -t 0-02:00          # Runtime in D-HH:MM, minimum of 10 minutes
-#SBATCH -p shared           # Partition to submit to
-#SBATCH --mem=2000          # Memory pool for all cores (see also --mem-per-cpu)
+#SBATCH --nodes=1              # Number of nodes
+#SBATCH --ntasks-per-node=6
+#SBATCH -t 0-04:00             # Runtime in D-HH:MM, minimum of 10 minutes
+#SBATCH -p shared              # Partition to submit to
+#SBATCH --mem=2000             # Memory pool for all cores (see also --mem-per-cpu)
 #SBATCH -o myoutput_%A_%a.out  # File to which STDOUT will be written, %j inserts jobid
 #SBATCH -e myerrors_%A_%a.err  # File to which STDERR will be written, %j inserts jobid
 
-cd openfoam/ || exit
+module load GCCcore/8.2.0 CMake/3.14.4 #gcc/10.2.0-fasrc01 openmpi/4.1.1-fasrc01
 
-#module load GCCcore/8.2.0 CMake/3.14.4
-#cd create_mesh/ || exit
-#cmake .
-#cmake --build . --target denticle --clean-first
-#cmake --build . --target decompose --clean-first
-#cd ..
+cd openfoam/ || exit
 
 export alpha=0.15                        # angle parameter of denticle [rad]
 export n_denticle=10                     # number of blocks in a circle
@@ -39,17 +34,24 @@ if ! [ -d "$folder" ]; then
     echo "MPI_NP=${MPI_NP}"
   } >"$folder"/README.md
 
+  cd "$folder"/create_mesh/ || exit
+  cmake .
+  cmake --build . --target denticle
+  cmake --build . --target decompose
+  cd ..
+
   ./create_mesh/denticle $alpha $n_denticle $n_R_outer "$n_R_denticle" $n_theta $n_z # create blockMeshDict
-  mv blockMeshDict "$folder"/system/
+  mv blockMeshDict system/
 
   ./create_mesh/decompose MPI_NP # create decomposeParDict
-  mv decomposeParDict "$folder"/system/
+  mv decomposeParDict system/
 fi
 
-cd "$folder" || exit
-singularity shell fertinaz-hpc_openfoam_of-8.sif # load container that includes openfoam 8
-blockMesh                                        # generate meshes
-decomposePar                                     # decompose a mesh and fields for parallel execution
-mpirun -np $MPI_NP simpleFoam -parallel >log &
+singularity exec ../fertinaz-hpc_openfoam_of-8.sif blockMesh    # generate meshes
+singularity exec ../fertinaz-hpc_openfoam_of-8.sif decomposePar # decompose a mesh and fields for parallel execution
 
-pgrep -f mpirun -a # print mpi process IDs
+#singularity exec ../fertinaz-hpc_openfoam_of-8.sif export MPI_BUFFER_SIZE=2000000000
+#mpirun -np $MPI_NP singularity exec ../fertinaz-hpc_openfoam_of-8.sif simpleFoam -parallel >log &
+singularity exec ../fertinaz-hpc_openfoam_of-8.sif simpleFoam >log &
+
+#pgrep -f mpirun -a # print mpi process IDs
