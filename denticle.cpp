@@ -50,29 +50,9 @@ int main(int argc, char *argv[]) {
     // read arguments if provided
     const double alpha = argc > 1 ? std::atof(argv[1]) : .15; /// angle parameter of denticle [rad]
     const int n = argc > 2 ? std::atoi(argv[2]) : 10; /// number of blocks in a circle
-    const int n_R_outer = argc > 3 ? std::atoi(argv[3]) : 24; /// number of cells in R direction in outer part
-    const int n_R_denticle = argc > 4 ? std::atoi(argv[4]) : 10; /// number of cells in R direction in denticle part
-    const int n_theta = argc > 5 ? std::atoi(argv[5]) : 69; /// number of cells in theta direction for both parts
-    const int n_z = argc > 6 ? std::atoi(argv[6]) : 7; /// number of cells in z direction
-    cout << "Constructing blockMeshDict\n"
-            "angle of denticle, alpha = "
-         << alpha
-         << " [rad]\n"
-            "number of blocks in a circle = "
-         << n
-         << "\n"
-            "number of cells in R direction in outer zone = "
-         << n_R_outer
-         << "\n"
-            "number of cells in R direction in denticle zone = "
-         << n_R_denticle
-         << "\n"
-            "number of cells in theta direction = "
-         << n_theta
-         << "\n"
-            "number of cells in z direction = "
-         << n_z
-         << "\n";
+    const int n_R_denticle = argc > 3 ? std::atoi(argv[3]) : 10; /// number of cells in R direction in denticle part
+    const int n_theta = argc > 4 ? std::atoi(argv[4]) : 69; /// number of cells in theta direction for both parts
+    const int n_z = argc > 5 ? std::atoi(argv[5]) : 7; /// number of cells in z direction
 
     const int m = 1; /// number of cells (2 blocks) in z_peak_bottom direction
     const double ang_radian = M_PI * 2. / n;
@@ -85,13 +65,36 @@ int main(int argc, char *argv[]) {
     const double R_valley_max = R_peak_max - A;
     const int N_poly = 100; /// number of points for polyline
     const double ang_poly = ang_radian / (N_poly + 1);
+    const double r_outer_R = 0.2; /// expansion ratio in R dir in outer part
     TEdgeSpace ES; // a grading calculator
     ES.calc("de", // [arg1] end cell size
-            "n", // [arg2] number of cells
+            "r", // [arg2] expansion ratio
             R_outer - R_valley_max, // length
             (R_peak_max - R_peak_min) / n_R_denticle, // [arg1]
-            n_R_outer); // [arg2]
-    const double r_outer_R = ES.getr(); // expansion ratio in R direction in outer part
+            r_outer_R); // [arg2] 1 / 5
+    const double n_R_outer = ES.getn(); /// number of cell in R dir in outer part
+    cout << "Constructing blockMeshDict\n"
+            "angle of denticle, alpha = "
+         << alpha
+         << " [rad]\n"
+            "number of blocks in a circle = "
+         << n
+         << "\n"
+            "number of cells in R direction in denticle zone = "
+         << n_R_denticle
+         << "\n"
+            "number of cells in R direction in outer part = "
+         << n_R_outer
+         << "\n"
+            "expansion ratio in R direction in out part = "
+         << r_outer_R
+         << "\n"
+            "number of cells in theta direction = "
+         << n_theta
+         << "\n"
+            "number of cells in z direction = "
+         << n_z
+         << "\n";
 
     for (int j = 0; j < m; j++) {
         const double z_peak = lambda * j;
