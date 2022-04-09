@@ -13,3 +13,8 @@ add_executable(denticle
         TEdgeSpace.h)
 
 add_executable(decompose decompose.cpp)
+
+add_executable(grading
+        grading.cpp
+        TEdgeSpace.cpp
+        TEdgeSpace.h)
