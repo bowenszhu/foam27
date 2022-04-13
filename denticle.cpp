@@ -49,16 +49,16 @@ int main(int argc, char *argv[]) {
 
     // read arguments if provided
     const double alpha = argc > 1 ? std::atof(argv[1]) : .15; /// angle parameter of denticle [rad]
-    const int n = argc > 2 ? std::atoi(argv[2]) : 10; /// number of blocks in a circle
+    const int n_denticle = argc > 2 ? std::atoi(argv[2]) : 10; /// number of blocks in a circle
     const int n_R_denticle = argc > 3 ? std::atoi(argv[3]) : 10; /// number of cells in R direction in denticle part
     const int n_theta = argc > 4 ? std::atoi(argv[4]) : 69; /// number of cells in theta direction for both parts
     const int n_z = argc > 5 ? std::atoi(argv[5]) : 7; /// number of cells in z direction
 
     const int m = 1; /// number of cells (2 blocks) in z_peak_bottom direction
-    const double ang_radian = M_PI * 2. / n;
-    const double ang_degree = 360. / n;
+    const double ang_radian = M_PI * 2. / n_denticle;
+    const double ang_degree = 360. / n_denticle;
     const double tan_alpha = tan(alpha);
-    const double temp = tan_alpha * 4. * M_PI / n;
+    const double temp = tan_alpha * 4. * M_PI / n_denticle;
     const double R_peak_min = R_inner * sqrt(temp / (exp(temp) - 1.));
     const double R_peak_max = R_peak_min * exp(tan_alpha * ang_radian);
     const double R_valley_min = R_peak_min - A;
@@ -72,34 +72,19 @@ int main(int argc, char *argv[]) {
             R_outer - R_valley_max, // length
             (R_peak_max - R_peak_min) / n_R_denticle, // [arg1]
             r_outer_R); // [arg2] 1 / 5
-    const double n_R_outer = ES.getn(); /// number of cell in R dir in outer part
-    cout << "Constructing blockMeshDict\n"
-            "angle of denticle, alpha = "
-         << alpha
-         << " [rad]\n"
-            "number of blocks in a circle = "
-         << n
-         << "\n"
-            "number of cells in R direction in denticle zone = "
-         << n_R_denticle
-         << "\n"
-            "number of cells in R direction in outer part = "
-         << n_R_outer
-         << "\n"
-            "expansion ratio in R direction in out part = "
-         << r_outer_R
-         << "\n"
-            "number of cells in theta direction = "
-         << n_theta
-         << "\n"
-            "number of cells in z direction = "
-         << n_z
-         << "\n";
+    const int n_R_outer = ES.getn(); /// number of cell in R dir in outer part
+    cout << "alpha=" << alpha << " # angle of denticle\n"
+         << "n_denticle=" << n_denticle << " # number of blocks in a circle\n"
+         << "n_R_denticle=" << n_R_denticle << " # number of cells in R direction in denticle zone\n"
+         << "n_R_outer=" << n_R_outer << " # number of cells in R direction in outer part\n"
+         << "r_outer_R=" << r_outer_R << " # expansion ratio in R direction in out part\n"
+         << "n_theta=" << n_theta << " # number of cells in theta direction\n"
+         << "n_z=" << n_z << " # number of cells in z direction\n";
 
     for (int j = 0; j < m; j++) {
         const double z_peak = lambda * j;
         const double z_valley = z_peak + lambda_2;
-        for (int i = 0; i < n; i++) {
+        for (int i = 0; i < n_denticle; i++) {
             const double theta = ang_radian * i;
             const double c = cos(theta);
             const double s = sin(theta);
@@ -122,7 +107,7 @@ int main(int argc, char *argv[]) {
                      << y_peak_min << " "
                      << z_peak << ")\n";
         }
-        for (int i = 0; i < n; i++) {
+        for (int i = 0; i < n_denticle; i++) {
             const double theta = ang_radian * i;
             const double c = cos(theta);
             const double s = sin(theta);
@@ -147,7 +132,7 @@ int main(int argc, char *argv[]) {
         }
     }
     const double z_peak_bottom = m * lambda;
-    for (int i = 0; i < n; i++) {
+    for (int i = 0; i < n_denticle; i++) {
         const double theta = ang_radian * i;
         const double c = cos(theta);
         const double s = sin(theta);
@@ -176,8 +161,8 @@ int main(int argc, char *argv[]) {
     meshFile << "blocks\n"
                 "(\n";
     for (int j = 0; j < m; j++) {
-        for (int i = 0; i < n; i++) {
-            compute_indices(indices, i, j, n);
+        for (int i = 0; i < n_denticle; i++) {
+            compute_indices(indices, i, j, n_denticle);
             meshFile << "     hex ("
                      << indices[0][0] << " "
                      << indices[0][0] + 1 << " "
@@ -224,8 +209,8 @@ int main(int argc, char *argv[]) {
                 "\n";
     meshFile << "edges\n"
                 "(\n";
-    for (int i = 0; i < n; i++) {
-        const double ang_block_1 = 2. * M_PI * (i + 1) / n;
+    for (int i = 0; i < n_denticle; i++) {
+        const double ang_block_1 = 2. * M_PI * (i + 1) / n_denticle;
         double x_peak_poly[N_poly];
         double y_peak_poly[N_poly];
         double x_valley_poly[N_poly];
@@ -243,7 +228,7 @@ int main(int argc, char *argv[]) {
             y_valley_poly[k] = R_valley_poly * s;
         }
         for (int j = 0; j < m; j++) {
-            compute_indices(indices, i, j, n);
+            compute_indices(indices, i, j, n_denticle);
             meshFile << "    arc " // outer peak
                      << indices[0][0] << " "
                      << indices[1][0] << " "
@@ -277,7 +262,7 @@ int main(int argc, char *argv[]) {
         }
         const double z_peak_bottom = m * lambda;
         const int j = m;
-        compute_indices(indices, i, j, n);
+        compute_indices(indices, i, j, n_denticle);
         meshFile << "    arc " // bottom outer peak
                  << indices[0][0] << " "
                  << indices[1][0] << " "
@@ -303,8 +288,8 @@ int main(int argc, char *argv[]) {
                 "        faces\n"
                 "        (\n";
     for (int j = 0; j < m; j++) {
-        for (int i = 0; i < n; i++) {
-            compute_indices(indices, i, j, n);
+        for (int i = 0; i < n_denticle; i++) {
+            compute_indices(indices, i, j, n_denticle);
             meshFile << "            ("
                      << indices[0][0] + 1 << " "
                      << indices[0][1] + 1 << " "
@@ -335,8 +320,8 @@ int main(int argc, char *argv[]) {
                 "        faces\n"
                 "        (\n";
     for (int j = 0; j < m; j++) {
-        for (int i = 0; i < n; i++) {
-            compute_indices(indices, i, j, n);
+        for (int i = 0; i < n_denticle; i++) {
+            compute_indices(indices, i, j, n_denticle);
             meshFile << "            ("
                      << indices[0][1] << " "
                      << indices[0][0] << " "
@@ -357,8 +342,8 @@ int main(int argc, char *argv[]) {
                 "         neighbourPatch back;\n"
                 "         faces\n"
                 "         (\n";
-    for (int i = 0; i < n; i++) {
-        compute_indices(indices, i, 0, n);
+    for (int i = 0; i < n_denticle; i++) {
+        compute_indices(indices, i, 0, n_denticle);
         meshFile << "            ("
                  << indices[0][0] << " "
                  << indices[0][0] + 1 << " "
@@ -378,8 +363,8 @@ int main(int argc, char *argv[]) {
                 "         neighbourPatch front;\n"
                 "         faces\n"
                 "         (\n";
-    for (int i = 0; i < n; i++) {
-        compute_indices(indices, i, m, n);
+    for (int i = 0; i < n_denticle; i++) {
+        compute_indices(indices, i, m, n_denticle);
         meshFile << "            ("
                  << indices[0][0] + 1 << " "
                  << indices[0][0] << " "
