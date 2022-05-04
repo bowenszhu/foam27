@@ -10,7 +10,8 @@ add_executable(linear linear.cpp)
 add_executable(denticle
         denticle.cpp
         TEdgeSpace.cpp
-        TEdgeSpace.h)
+        TEdgeSpace.h
+        input_parser.cpp)
 
 add_executable(decompose decompose.cpp)
 

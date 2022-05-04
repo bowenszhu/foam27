@@ -4,6 +4,7 @@
 #include <iomanip>
 #include <cstdlib>
 #include "TEdgeSpace.h"
+#include "input_parser.cpp"
 
 using namespace std;
 
@@ -48,11 +49,26 @@ int main(int argc, char *argv[]) {
     const double A = lambda_2 * AR;
 
     // read arguments if provided
-    const double alpha = argc > 1 ? std::atof(argv[1]) : .15; /// angle parameter of denticle [rad]
-    const int n_denticle = argc > 2 ? std::atoi(argv[2]) : 10; /// number of blocks in a circle
-    const int n_R_denticle = argc > 3 ? std::atoi(argv[3]) : 10; /// number of cells in R direction in denticle part
-    const int n_theta = argc > 4 ? std::atoi(argv[4]) : 69; /// number of cells in theta direction for both parts
-    const int n_z = argc > 5 ? std::atoi(argv[5]) : 7; /// number of cells in z direction
+    InputParser input(argc, argv);
+    /// angle parameter of denticle [rad]
+    const std::string &alpha_input = input.getCmdOption("-alpha");
+    const double alpha = alpha_input.empty() ? 0.15 : std::stod(alpha_input);
+
+    /// number of denticle blocks in a circle
+    const std::string &n_input = input.getCmdOption("-n");
+    const int n_denticle = n_input.empty() ? 10 : std::stoi(n_input);
+
+    /// number of cells in R direction in denticle part
+    const std::string &n_R_denticle_input = input.getCmdOption("-nRDenticle");
+    const int n_R_denticle = n_R_denticle_input.empty() ? 10 : std::stoi(n_R_denticle_input);
+
+    /// number of cells in theta direction for both parts
+    const std::string &n_theta_input = input.getCmdOption("-nTheta");
+    const int n_theta = n_theta_input.empty() ? 69 : std::stoi(n_theta_input);
+
+    /// number of cells in z direction
+    const std::string &n_z_input = input.getCmdOption("-nZ");
+    const int n_z = n_z_input.empty() ? 7 : std::stoi(n_z_input);
 
     const int m = 1; /// number of cells (2 blocks) in z_peak_bottom direction
     const double ang_radian = M_PI * 2. / n_denticle;
