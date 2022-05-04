@@ -40,8 +40,10 @@ cd ..
   -n $n_denticle \
   -nRDenticle "$n_R_denticle" \
   -nTheta $n_theta \
-  -nZ $n_z >README.md
+  -nZ $n_z \
+  -sampleLines >README.md
 mv blockMeshDict system/
+mv singleGraph_* system/ # move OpenFoam functions for sampling mag(U) along certain lines
 
 singularity exec fertinaz-hpc_openfoam_of-8.sif blockMesh # generate meshes
 singularity exec fertinaz-hpc_openfoam_of-8.sif simpleFoam >log
