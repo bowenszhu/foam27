@@ -179,7 +179,7 @@ int main(int argc, char *argv[]) {
     for (int j = 0; j < m; j++) {
         for (int i = 0; i < n_denticle; i++) {
             compute_indices(indices, i, j, n_denticle);
-            meshFile << "     hex ("
+            meshFile << "    hex ("
                      << indices[0][0] << " "
                      << indices[0][0] + 1 << " "
                      << indices[0][1] + 1 << " "
@@ -189,7 +189,7 @@ int main(int argc, char *argv[]) {
                      << indices[1][1] + 1 << " "
                      << indices[1][1] << ") ("
                      << n_R_outer << " " << n_z << " " << n_theta << ") simpleGrading (" << r_outer_R << " 1 1)\n"
-                     << "     hex ("
+                     << "    hex ("
                      << indices[0][1] << " "
                      << indices[0][1] + 1 << " "
                      << indices[0][2] + 1 << " "
@@ -276,7 +276,6 @@ int main(int argc, char *argv[]) {
                 meshFile << "(" << x_valley_poly[k] << " " << y_valley_poly[k] << " " << z_valley << ") ";
             meshFile << ")\n";
         }
-        const double z_peak_bottom = m * lambda;
         const int j = m;
         compute_indices(indices, i, j, n_denticle);
         meshFile << "    arc " // bottom outer peak
@@ -354,10 +353,10 @@ int main(int argc, char *argv[]) {
                 "    }\n";
     meshFile << "    front\n"
                 "    {\n";
-    meshFile << "         type cyclic;\n"
-                "         neighbourPatch back;\n"
-                "         faces\n"
-                "         (\n";
+    meshFile << "        type cyclic;\n"
+                "        neighbourPatch back;\n"
+                "        faces\n"
+                "        (\n";
     for (int i = 0; i < n_denticle; i++) {
         compute_indices(indices, i, 0, n_denticle);
         meshFile << "            ("
@@ -375,10 +374,10 @@ int main(int argc, char *argv[]) {
                 "    }\n";
     meshFile << "    back\n"
                 "    {\n";
-    meshFile << "         type cyclic;\n"
-                "         neighbourPatch front;\n"
-                "         faces\n"
-                "         (\n";
+    meshFile << "        type cyclic;\n"
+                "        neighbourPatch front;\n"
+                "        faces\n"
+                "        (\n";
     for (int i = 0; i < n_denticle; i++) {
         compute_indices(indices, i, m, n_denticle);
         meshFile << "            ("
