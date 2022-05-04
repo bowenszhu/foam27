@@ -401,5 +401,85 @@ int main(int argc, char *argv[]) {
                 "\n";
     meshFile << "// ************************************************************************* //\n";
     meshFile.close();
+
+    if (input.cmdOptionExists("-sampleLines")) { // create OpenFOAM function files for sampling mag(U) along lines
+        std::string header = "/*--------------------------------*- C++ -*----------------------------------*\\\n"
+                             "  =========                 |\n"
+                             "  \\\\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox\n"
+                             "   \\\\    /   O peration     | Website:  https://openfoam.org\n"
+                             "    \\\\  /    A nd           | Version:  8\n"
+                             "     \\\\/     M anipulation  |\n"
+                             "-------------------------------------------------------------------------------\n"
+                             "Description\n"
+                             "    Writes graph data for specified fields along a line, specified by start\n"
+                             "    and end points.\n"
+                             "\n"
+                             "\\*---------------------------------------------------------------------------*/\n\n";
+        std::string footer = "fields  (mag(U));\n" // sample the magnitude of velocity
+                             "\n"
+                             "// Sampling and I/O settings\n"
+                             "#includeEtc \"caseDicts/postProcessing/graphs/sampleDict.cfg\"\n"
+                             "\n"
+                             "// Override settings here, e.g.\n"
+                             "/*\n"
+                             "setConfig\n"
+                             "{\n"
+                             "    type lineCell;\n"
+                             "    axis x;        // y, z, xyz\n"
+                             "}\n"
+                             "*/\n"
+                             "\n"
+                             "// Must be last entry\n"
+                             "#includeEtc \"caseDicts/postProcessing/graphs/graph.cfg\"\n"
+                             "\n"
+                             "// ************************************************************************* //";
+        ofstream graph_thetaFull_zPeak("singleGraph_thetaFull_zPeak");
+        graph_thetaFull_zPeak << std::fixed << setprecision(12)
+                              << header
+                              << "start   (0 0 0);\n"
+                              << "end     (" << R_outer << " 0 0);\n"
+                              << footer;
+        graph_thetaFull_zPeak.close();
+        ofstream graph_thetaFull_zMid("singleGraph_thetaFull_zMid");
+        graph_thetaFull_zMid << std::fixed << setprecision(12)
+                             << header
+                             << "start   (0 0 " << lambda_2 / 2 << ");\n"
+                             << "end     (" << R_outer << " 0 " << lambda_2 / 2 << ");\n"
+                             << footer;
+        graph_thetaFull_zMid.close();
+        ofstream graph_thetaFull_zTrough("singleGraph_thetaFull_zTrough");
+        graph_thetaFull_zTrough << std::fixed << setprecision(12)
+                                << header
+                                << "start   (0 0 " << lambda_2 << ");\n"
+                                << "end     (" << R_outer << " 0 " << lambda_2 << ");\n"
+                                << footer;
+        graph_thetaFull_zTrough.close();
+
+        const double theta_mid = ang_radian / 2;
+        const double x_outer_thetaMid = R_outer * cos(theta_mid);
+        const double y_outer_thetaMid = R_outer * sin(theta_mid);
+        ofstream graph_thetaMid_zPeak("singleGraph_thetaMid_zPeak");
+        graph_thetaMid_zPeak << std::fixed << setprecision(12)
+                             << header
+                             << "start   (0 0 0);\n"
+                             << "end     (" << x_outer_thetaMid << " " << y_outer_thetaMid << " 0);\n"
+                             << footer;
+        graph_thetaMid_zPeak.close();
+        ofstream graph_thetaMid_zMid("singleGraph_thetaMid_zMid");
+        graph_thetaMid_zMid << std::fixed << setprecision(12)
+                            << header
+                            << "start   (0 0 " << lambda_2 / 2 << ");\n"
+                            << "end     (" << x_outer_thetaMid << " "
+                            << y_outer_thetaMid << " " << lambda_2 / 2 << ");\n"
+                            << footer;
+        graph_thetaMid_zMid.close();
+        ofstream graph_thetaMid_zTrough("singleGraph_thetaMid_zTrough");
+        graph_thetaMid_zTrough << std::fixed << setprecision(12)
+                            << header
+                            << "start   (0 0 " << lambda_2 << ");\n"
+                            << "end     (" << x_outer_thetaMid << " " << y_outer_thetaMid << " " << lambda_2 << ");\n"
+                            << footer;
+        graph_thetaMid_zTrough.close();
+    }
     return 0;
 }
