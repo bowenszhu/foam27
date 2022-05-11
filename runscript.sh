@@ -16,7 +16,7 @@ cd "$SCRATCH"/raayai_ardakani_lab/$(whoami)/openfoam/ || exit
 
 alpha=0.15                        # angle parameter of denticle [rad]
 n_denticle=10                     # number of blocks in a circle
-n_R_denticle=$SLURM_ARRAY_TASK_ID # number of cells in R direction in denticle part
+n_R_denticle=16                   # number of cells in R direction in denticle part
 n_theta=69                        # number of cells in theta direction for both parts
 n_z=10                            # number of cells in z direction
 
@@ -43,7 +43,7 @@ cd ..
   -nZ $n_z \
   -sampleLines >README.md
 mv blockMeshDict system/
-mv singleGraph_* system/ # OpenFOAM functions for sampling mag(U) along certain lines
+mv singleGraph_* system/ # OpenFOAM functions for sampling U along certain lines
 
 singularity exec fertinaz-hpc_openfoam_of-8.sif blockMesh # generate meshes
 singularity exec fertinaz-hpc_openfoam_of-8.sif simpleFoam >log
