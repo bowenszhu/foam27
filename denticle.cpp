@@ -402,7 +402,7 @@ int main(int argc, char *argv[]) {
     meshFile << "// ************************************************************************* //\n";
     meshFile.close();
 
-    if (input.cmdOptionExists("-sampleLines")) { // create OpenFOAM function files for sampling mag(U) along lines
+    if (input.cmdOptionExists("-sampleLines")) { // create OpenFOAM function files for sampling U along 6 lines
         std::string header = "/*--------------------------------*- C++ -*----------------------------------*\\\n"
                              "  =========                 |\n"
                              "  \\\\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox\n"
@@ -415,7 +415,7 @@ int main(int argc, char *argv[]) {
                              "    and end points.\n"
                              "\n"
                              "\\*---------------------------------------------------------------------------*/\n\n";
-        std::string footer = "fields  (mag(U));\n" // sample the magnitude of velocity
+        std::string footer = "fields  (U);\n" // sample the velocities
                              "\n"
                              "// Sampling and I/O settings\n"
                              "#includeEtc \"caseDicts/postProcessing/graphs/sampleDict.cfg\"\n"
