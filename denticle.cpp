@@ -24,7 +24,7 @@ int main(int argc, char *argv[]) {
                 "  =========                 |\n"
                 "  \\\\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox\n"
                 "   \\\\    /   O peration     | Website:  https://openfoam.org\n"
-                "    \\\\  /    A nd           | Version:  9\n"
+                "    \\\\  /    A nd           | Version:  8\n"
                 "     \\\\/     M anipulation  |\n"
                 "\\*---------------------------------------------------------------------------*/\n\n"
                 "FoamFile\n"
@@ -58,18 +58,6 @@ int main(int argc, char *argv[]) {
     const std::string &n_input = input.getCmdOption("-n");
     const int n_denticle = n_input.empty() ? 10 : std::stoi(n_input);
 
-    /// number of cells in R direction in denticle part
-    const std::string &n_R_denticle_input = input.getCmdOption("-nRDenticle");
-    const int n_R_denticle = n_R_denticle_input.empty() ? 10 : std::stoi(n_R_denticle_input);
-
-    /// number of cells in theta direction for both parts
-    const std::string &n_theta_input = input.getCmdOption("-nTheta");
-    const int n_theta = n_theta_input.empty() ? 69 : std::stoi(n_theta_input);
-
-    /// number of cells in z direction
-    const std::string &n_z_input = input.getCmdOption("-nZ");
-    const int n_z = n_z_input.empty() ? 7 : std::stoi(n_z_input);
-
     const int m = 1; /// number of cells (2 blocks) in z_peak_bottom direction
     const double ang_radian = M_PI * 2. / n_denticle;
     const double ang_degree = 360. / n_denticle;
@@ -82,6 +70,28 @@ int main(int argc, char *argv[]) {
     const int N_poly = 100; /// number of points for polyline
     const double ang_poly = ang_radian / (N_poly + 1);
     const double r_outer_R = 0.2; /// expansion ratio in R dir in outer part
+
+    const double R_max_min_gap = 2.3289556497985924; // R_max - R_min when alpha=0.15 and n=10
+    /// number of cells in R direction in denticle part
+    const std::string &n_R_denticle_input = input.getCmdOption("-nRDenticle");
+    int n_R_denticle = n_R_denticle_input.empty() ?
+                       16 / R_max_min_gap * (R_peak_max - R_peak_min) : std::stoi(n_R_denticle_input);
+
+    /// number of cells in theta direction for both parts
+    const std::string &n_theta_input = input.getCmdOption("-nTheta");
+    int n_theta = n_theta_input.empty() ? 69 * 10 / n_denticle : std::stoi(n_theta_input);
+
+    /// number of cells in z direction
+    const std::string &n_z_input = input.getCmdOption("-nZ");
+    int n_z = n_z_input.empty() ? 7 : std::stoi(n_z_input);
+
+    /// coarse or fine grid
+    const std::string &grid_input = input.getCmdOption("-grid");
+    const int grid = grid_input.empty() ? 1 : std::stoi(grid_input); // expected input: 1 or 2 or 4
+    n_R_denticle *= grid;
+    n_theta *= grid;
+    n_z *= grid;
+
     TEdgeSpace ES; // a grading calculator
     ES.calc("de", // [arg1] end cell size
             "r", // [arg2] expansion ratio
@@ -89,13 +99,14 @@ int main(int argc, char *argv[]) {
             (R_peak_max - R_peak_min) / n_R_denticle, // [arg1]
             r_outer_R); // [arg2] 1 / 5
     const int n_R_outer = ES.getn(); /// number of cell in R dir in outer part
-    cout << "alpha=" << alpha << " # angle of denticle\n"
-         << "n_denticle=" << n_denticle << " # number of blocks in a circle\n"
-         << "n_R_denticle=" << n_R_denticle << " # number of cells in R direction in denticle zone\n"
-         << "n_R_outer=" << n_R_outer << " # number of cells in R direction in outer part\n"
-         << "r_outer_R=" << r_outer_R << " # expansion ratio in R direction in out part\n"
-         << "n_theta=" << n_theta << " # number of cells in theta direction\n"
-         << "n_z=" << n_z << " # number of cells in z direction\n";
+    cout << "alpha: " << alpha << " # angle of denticle\n"
+         << "n_denticle: " << n_denticle << " # number of blocks in a circle\n"
+         << "n_R_denticle: " << n_R_denticle << " # number of cells in R direction in denticle zone\n"
+         << "n_R_outer: " << n_R_outer << " # number of cells in R direction in outer part\n"
+         << "r_outer_R: " << r_outer_R << " # expansion ratio in R direction in out part\n"
+         << "n_theta: " << n_theta << " # number of cells in theta direction\n"
+         << "n_z: " << n_z << " # number of cells in z direction\n"
+         << "grid: " << grid << " # coarse or fine grid\n";
 
     for (int j = 0; j < m; j++) {
         const double z_peak = lambda * j;
@@ -415,7 +426,7 @@ int main(int argc, char *argv[]) {
                              "    and end points.\n"
                              "\n"
                              "\\*---------------------------------------------------------------------------*/\n\n";
-        std::string footer = "fields  (U);\n" // sample the velocities
+        std::string footer = "fields (U);\n" // sample the velocities
                              "\n"
                              "// Sampling and I/O settings\n"
                              "#includeEtc \"caseDicts/postProcessing/graphs/sampleDict.cfg\"\n"
@@ -475,10 +486,11 @@ int main(int argc, char *argv[]) {
         graph_thetaMid_zMid.close();
         ofstream graph_thetaMid_zTrough("singleGraph_thetaMid_zTrough");
         graph_thetaMid_zTrough << std::fixed << setprecision(12)
-                            << header
-                            << "start   (0 0 " << lambda_2 << ");\n"
-                            << "end     (" << x_outer_thetaMid << " " << y_outer_thetaMid << " " << lambda_2 << ");\n"
-                            << footer;
+                               << header
+                               << "start   (0 0 " << lambda_2 << ");\n"
+                               << "end     (" << x_outer_thetaMid << " " << y_outer_thetaMid << " " << lambda_2
+                               << ");\n"
+                               << footer;
         graph_thetaMid_zTrough.close();
     }
     return 0;
