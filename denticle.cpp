@@ -75,7 +75,7 @@ int main(int argc, char *argv[]) {
     /// number of cells in R direction in denticle part
     const std::string &n_R_denticle_input = input.getCmdOption("-nRDenticle");
     int n_R_denticle = n_R_denticle_input.empty() ?
-                       16 / R_max_min_gap * (R_peak_max - R_peak_min) : std::stoi(n_R_denticle_input);
+                       max(5., 16 / R_max_min_gap * (R_peak_max - R_peak_min)) : std::stoi(n_R_denticle_input);
 
     /// number of cells in theta direction for both parts
     const std::string &n_theta_input = input.getCmdOption("-nTheta");
@@ -85,20 +85,22 @@ int main(int argc, char *argv[]) {
     const std::string &n_z_input = input.getCmdOption("-nZ");
     int n_z = n_z_input.empty() ? 7 : std::stoi(n_z_input);
 
-    /// coarse or fine grid
-    const std::string &grid_input = input.getCmdOption("-grid");
-    const int grid = grid_input.empty() ? 1 : std::stoi(grid_input); // expected input: 1 or 2 or 4
-    n_R_denticle *= grid;
-    n_theta *= grid;
-    n_z *= grid;
-
     TEdgeSpace ES; // a grading calculator
     ES.calc("de", // [arg1] end cell size
             "r", // [arg2] expansion ratio
             R_outer - R_valley_max, // length
             (R_peak_max - R_peak_min) / n_R_denticle, // [arg1]
             r_outer_R); // [arg2] 1 / 5
-    const int n_R_outer = ES.getn(); /// number of cell in R dir in outer part
+    int n_R_outer = ES.getn(); /// number of cell in R dir in outer part
+
+    /// coarse or fine grid
+    const std::string &grid_input = input.getCmdOption("-grid");
+    const int grid = grid_input.empty() ? 1 : std::stoi(grid_input); // expected input: 1 or 2 or 4
+    n_R_denticle *= grid;
+    n_R_outer *= grid;
+    n_theta *= grid;
+    n_z *= grid;
+
     cout << "alpha: " << alpha << " # angle of denticle\n"
          << "n_denticle: " << n_denticle << " # number of blocks in a circle\n"
          << "n_R_denticle: " << n_R_denticle << " # number of cells in R direction in denticle zone\n"
