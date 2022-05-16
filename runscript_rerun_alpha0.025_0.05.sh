@@ -2,6 +2,7 @@ cd "$SCRATCH"/raayai_ardakani_lab/$(whoami)/openfoam/denticle_multiple
 rm -r denticle_alpha0.025
 rm -r denticle_alpha0.05
 
+cd
 alphas=(0.025 0.05)
 ns=({4..15} 20 30 50)
 grids=(1 2 4)
