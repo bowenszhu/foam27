@@ -26,24 +26,35 @@ if [ -z "$grid" ]; then
   #  exit
   grid=1
 fi
-echo "alpha: $alpha"
-echo "n: $n"
-echo "grid: $grid"
 
 f_alpha="denticle_alpha$alpha"
 f_n="${f_alpha}_n$n"
 f_grid="${f_n}_grid$grid"
-folder_parent="denticle_multiple/${f_alpha}/${f_n}/${f_grid}/"
+folder_parent="denticle_multiple/${f_alpha}/${f_n}/${f_grid}"
 mkdir -p "$folder_parent"
 
 folder="${folder_parent}/${f_grid}_${SLURM_JOB_ID}"
 cp -r denticle/ "$folder" # create new OpenFOAM folder
 
-cd "$folder"/ || exit
+cd "$folder"/ || record_error
 
-cd create_mesh/ || exit
+print_config() {
+  echo "alpha: $alpha"
+  echo "n: $n"
+  echo "grid: $grid"
+  echo "slurm_job_id: ${SLURM_JOB_ID}"
+  echo "dir: $folder"
+  echo ""
+}
+record_error() {
+  print_config >>error.txt
+  exit
+}
+print_config
+
+cd create_mesh/ || record_error
 cmake .
-cmake --build . --target denticle || exit
+cmake --build . --target denticle || record_error
 cd ..
 
 # create blockMeshDict
@@ -51,11 +62,11 @@ cd ..
   -alpha $alpha \
   -n $n \
   -grid $grid \
-  -sampleLines >README.md
-mv blockMeshDict system/
-mv singleGraph_* system/ # OpenFOAM functions for sampling U along certain lines
+  -sampleLines >README.md || record_error
+mv blockMeshDict system/ || record_error
+mv singleGraph_* system/ || record_error # OpenFOAM functions for sampling U along certain lines
 
-singularity exec fertinaz-hpc_openfoam_of-8.sif blockMesh
-singularity exec fertinaz-hpc_openfoam_of-8.sif simpleFoam >log
+singularity exec fertinaz-hpc_openfoam_of-8.sif blockMesh || record_error
+singularity exec fertinaz-hpc_openfoam_of-8.sif simpleFoam >log || record_error
 
 echo "finished"
