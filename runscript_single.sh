@@ -30,6 +30,7 @@ fi
 f_alpha="denticle_alpha$alpha"
 f_n="${f_alpha}_n$n"
 f_grid="${f_n}_grid$grid"
+
 folder_parent="denticle_multiple/${f_alpha}/${f_n}/${f_grid}"
 mkdir -p "$folder_parent"
 
@@ -48,6 +49,7 @@ print_config() {
 }
 record_error() {
   print_config >>error.txt
+  echo "error"
   exit
 }
 print_config
