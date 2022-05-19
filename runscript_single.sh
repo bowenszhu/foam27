@@ -12,7 +12,7 @@ set -o xtrace # print command
 
 module load GCCcore/8.2.0 CMake/3.14.4
 
-cd "$SCRATCH"/raayai_ardakani_lab/$(whoami)/openfoam/ || exit
+cd "$SCRATCH"/raayai_ardakani_lab/bszhu/openfoam/ || exit
 
 if [ -z "$alpha" ]; then
   alpha=0.05
