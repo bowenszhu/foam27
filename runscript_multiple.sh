@@ -7,7 +7,12 @@ for alpha in "${alphas[@]}"; do
     echo "n: $n"
     for grid in "${grids[@]}"; do
       echo "grid: $grid"
-      sbatch --export=alpha="$alpha",n="$n",grid="$grid" runscript_single.sh
+      sbatch \
+        -o myoutput_a"${alpha}"_n"${n}"_g"${grid}".txt \
+        -e myerrors_a"${alpha}"_n"${n}"_g"${grid}".txt \
+        --job-name=openfoam_denticle_a"${alpha}"_n"${n}"_g"${grid}" \
+        --export=alpha="$alpha",n="$n",grid="$grid" runscript_single.sh
+      sleep 1 # pause 1 second to be kind to the scheduler
     done
   done
 done
