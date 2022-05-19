@@ -15,15 +15,12 @@ module load GCCcore/8.2.0 CMake/3.14.4
 cd "$SCRATCH"/raayai_ardakani_lab/$(whoami)/openfoam/ || exit
 
 if [ -z "$alpha" ]; then
-  #  exit
   alpha=0.05
 fi
 if [ -z "$n" ]; then
-  #  exit
   n=10
 fi
 if [ -z "$grid" ]; then
-  #  exit
   grid=1
 fi
 
