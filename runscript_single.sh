@@ -63,7 +63,7 @@ cd ..
   -grid $grid \
   -sampleLines >README.md || record_error
 mv blockMeshDict system/ || record_error
-mv singleGraph_* system/ || record_error # OpenFOAM functions for sampling U along certain lines
+mv singleGraph_* system/ || record_error
 
 singularity exec fertinaz-hpc_openfoam_of-8.sif blockMesh || record_error
 singularity exec fertinaz-hpc_openfoam_of-8.sif simpleFoam >log || record_error
