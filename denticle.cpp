@@ -96,10 +96,13 @@ int main(int argc, char *argv[]) {
     /// coarse or fine grid
     const std::string &grid_input = input.getCmdOption("-grid");
     const int grid = grid_input.empty() ? 1 : std::stoi(grid_input); // expected input: 1 or 2 or 4
-    n_R_denticle *= grid;
-    n_R_outer *= grid;
-    n_theta *= grid;
-    n_z *= grid;
+    // increase the number of cells in all directions by some factor
+    if (grid > 1) {
+        n_R_denticle *= grid;
+        n_R_outer *= grid;
+        n_theta *= grid;
+        n_z *= grid;
+    }
 
     cout << "alpha: " << alpha << " # angle of denticle\n"
          << "n_denticle: " << n_denticle << " # number of blocks in a circle\n"
