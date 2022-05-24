@@ -7,11 +7,16 @@ for alpha in "${alphas[@]}"; do
     echo "n: $n"
     for grid in "${grids[@]}"; do
       echo "grid: $grid"
-      sbatch \ `# submit a batch serial job`
-        -o myoutput_a"${alpha}"_n"${n}"_g"${grid}".txt \ `# output file, override -o inside runscript_single.sh`
-        -e myerrors_a"${alpha}"_n"${n}"_g"${grid}".txt \ `# error  file, override -o inside runscript_single.sh`
-        --job-name=openfoam_denticle_a"${alpha}"_n"${n}"_g"${grid}" \ `# add parameters to job name`
-        --export=alpha="$alpha",n="$n",grid="$grid" runscript_single.sh # pass parameters as environment variables
+      # submit a batch serial job
+      # set output and error filenames
+      # set job name
+      # pass parameters as environment variables
+      sbatch \
+        -o myoutput_a"${alpha}"_n"${n}"_g"${grid}".txt \
+        -e myerrors_a"${alpha}"_n"${n}"_g"${grid}".txt \
+        --job-name=openfoam_denticle_a"${alpha}"_n"${n}"_g"${grid}" \
+        --export=alpha="$alpha",n="$n",grid="$grid" \
+        runscript_single.sh
       sleep 1 # pause 1 second to be kind to the Slurm scheduler when submitting a large number of jobs
     done
   done
