@@ -12,7 +12,7 @@ set -o xtrace # print commands in output file, shows which commands have been ex
 
 module load GCCcore/8.2.0 CMake/3.14.4 # load CMake and C++ compiler
 
-cd "$SCRATCH"/raayai_ardakani_lab/bszhu/openfoam/ || exit # change to the scratch folder
+cd "$SCRATCH"/raayai_ardakani_lab/$(whoami)/openfoam/ || exit # change to the scratch folder
 
 # set the parameters unless they have been set as environment variables
 if [ -z "$alpha" ]; then
